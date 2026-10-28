@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>IOT CITY | VYONX</title>
+<meta name="description" content="IOT CITY — portal VYONX de acesso aos sistemas de cidades inteligentes e saúde dos dispositivos IoT.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23041626'/%3E%3Cpath d='M7 8l9 17 9-17' fill='none' stroke='%2337d9ff' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{color-scheme:dark;--cyan:#37d9ff;--blue:#157bfb;--white:#edf6ff;--muted:#8ea9bd;--line:rgba(54,175,237,.27);--dark:#010918;--side:0px}
+*{box-sizing:border-box}html,body{height:100%;min-height:600px;margin:0}body{font-family:Inter,"Segoe UI",Arial,sans-serif;overflow:hidden;background:#020816;color:var(--white);user-select:none}
+button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid #3be9fc;outline-offset:3px}
+.app{width:100vw;height:100vh;min-height:600px;position:relative;overflow:hidden;background:radial-gradient(ellipse 54% 60% at 58% 66%,#063766bb,transparent 76%),linear-gradient(125deg,#020913,#041626 70%,#020913)}
+.app.menu-expandido{--side:212px}.app.menu-recolhido{--side:74px}.app.menu-oculto{--side:0px}
+.room{position:absolute;inset:-30px;z-index:0;opacity:.8;background-image:url("sala.jpg");background-size:cover;background-position:center;filter:saturate(1.25)}
+.room:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#010713c7 0%,#010a1aa7 18%,#010b1a52 55%,#020816ad 100%),linear-gradient(0deg,#010614b8,transparent 43%,#00102388)}
+.app::after{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;opacity:.11;background:repeating-linear-gradient(0deg,transparent 0,transparent 69px,#3ca4ff41 70px),repeating-linear-gradient(90deg,transparent 0,transparent 69px,#3ca4ff41 70px);mask-image:linear-gradient(0deg,#000 0,transparent 65%)}
+/* topo */
+.top{position:absolute;z-index:100;left:0;right:0;top:0;height:74px;display:flex;align-items:center;gap:20px;padding:0 26px 0 18px;background:linear-gradient(180deg,#020a1cf7,#041226e5);border-bottom:1px solid #1e628a66;box-shadow:0 15px 35px #0008}
+.logo{display:flex;align-items:center;gap:12px;white-space:nowrap;text-decoration:none;color:inherit}.vmark{font-size:46px;line-height:.9;font-weight:950;font-style:italic;letter-spacing:-9px;padding-right:8px;background:linear-gradient(132deg,#7ff3ff 4%,#19c9fa 55%,#1362e9 100%);-webkit-background-clip:text;background-clip:text;color:transparent}.logotype{font-size:22px;font-weight:900;letter-spacing:4px;line-height:1}.logotype span{color:#48defa}.submark{font-weight:600;font-size:9px;letter-spacing:3.4px;color:#9fc6e7;margin-top:7px}
+.top-search{position:relative;width:min(370px,30vw);height:38px;margin:0 auto}.top-search input{width:100%;height:100%;background:#020e1cc9;color:white;border:1px solid #1d8bd38c;border-radius:22px;padding:0 18px 0 42px;outline:0;font-size:12.5px}.top-search input:focus{border-color:#48e5ff;box-shadow:0 0 20px #00a2ff42}.top-search svg{position:absolute;left:14px;top:10px;width:18px;height:18px;stroke:#81bddf;fill:none;stroke-width:1.7}
+.top-right{display:flex;align-items:center;gap:8px}.top-btn{height:36px;min-width:36px;padding:0 10px;border:1px solid #1d6fa055;border-radius:9px;background:#061a2fa8;color:#a7cde9;display:inline-flex;align-items:center;justify-content:center;gap:7px;font-size:12px;text-decoration:none}.top-btn:hover{background:#113657;color:#e6f8ff}.top-btn.on{border-color:#3ee0ff;color:#e6f8ff;background:#0b4467}.top-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* menu lateral = os MESMOS sistemas da órbita */
+.sidebar{position:absolute;z-index:90;top:74px;bottom:0;left:0;width:var(--side);overflow:hidden;background:linear-gradient(100deg,#020b19f5,#051425ec);border-right:1px solid #1b76a04f;box-shadow:15px 0 40px #0007;padding:18px 10px 14px;display:flex;flex-direction:column;transition:width .25s ease}.menu-oculto .sidebar{padding:0;border:0}
+.side-tit{font-size:9.5px;letter-spacing:2.6px;color:#6fa5c6;font-weight:700;padding:0 10px 10px;white-space:nowrap}.menu-recolhido .side-tit{visibility:hidden}
+.nav-group{display:grid;gap:4px;overflow:auto;scrollbar-width:thin}.nav-btn{height:46px;display:flex;align-items:center;gap:13px;border:0;border-radius:9px;color:#a0bacd;background:transparent;padding:0 12px;text-align:left;font-size:12.5px;white-space:nowrap;position:relative}
+.nav-btn .navico{flex:0 0 auto;width:26px;height:26px;display:grid;place-items:center;color:#7fc4e4}.nav-btn .navico svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.nav-btn .nav-label{overflow:hidden;text-overflow:ellipsis}.menu-recolhido .nav-btn{justify-content:center;padding:0}.menu-recolhido .nav-label,.menu-recolhido .nav-lock{display:none}
+.nav-btn.active{background:linear-gradient(90deg,#0d72bd55,#07305632);box-shadow:inset 3px 0 0 #2be8ff,inset 15px 0 25px -17px #2ddfff;color:white;font-weight:700}.nav-btn.active .navico,.nav-btn:hover .navico{color:#40e2ff}.nav-btn:hover:not(.active){background:#153d5657;color:#e2f4ff}
+.nav-btn.bloq{opacity:.62}.nav-lock{margin-left:auto;font-size:11px;color:#7fa3bb}
+.nav-foot{margin-top:auto;border-top:1px solid #17476666;padding:14px 8px 4px;font-size:10px;color:#87a9bf;letter-spacing:1px;white-space:nowrap}.nav-foot strong{display:block;color:#d0ebfa;font-size:11px;margin-top:4px;letter-spacing:.5px}.menu-recolhido .nav-foot{display:none}
+/* palco */
+.main{position:absolute;z-index:2;left:var(--side);right:0;top:74px;bottom:0;min-width:0;overflow:hidden;transition:left .25s ease}
+.overview{position:absolute;z-index:10;left:46px;right:40px;top:24px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+.heading h1{font-size:clamp(36px,3.7vw,60px);letter-spacing:-.9px;margin:0;line-height:1;font-weight:860;text-shadow:0 5px 31px #0b8cc64f}.heading h1 span{background:linear-gradient(115deg,#2da0ff,#33e6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.heading .eyebrow{margin:8px 0 0;letter-spacing:4px;font-size:11px;color:#8de0ff;font-weight:700}.heading .caption{margin:10px 0 0;font-size:12.5px;line-height:1.5;color:#c4deef;max-width:430px}
+.kpis{display:flex;gap:10px;margin-top:6px}.kpi{min-width:136px;padding:12px 15px;background:linear-gradient(120deg,#0a2c48a8,#04162f96);border:1px solid #2b84bd66;border-radius:10px;backdrop-filter:blur(6px)}.kpi .kvalue{font-size:17px;font-weight:780}.kpi .klabel{font-size:10px;margin-top:5px;color:#99b8d3}
+.stage{position:absolute;z-index:4;left:0;right:0;top:150px;bottom:58px;overflow:hidden;cursor:grab;touch-action:none;outline:none}.stage.grabbing{cursor:grabbing}.stage:before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 49% 49% at 50% 51%,#0164bd2c,transparent 78%)}
+.base-glow{position:absolute;z-index:0;left:50%;top:60%;width:75%;height:58%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(ellipse,#00aaff22,transparent 68%);filter:blur(19px);pointer-events:none}
+.halo{position:absolute;z-index:0;left:50%;top:66%;width:min(840px,74%);height:242px;transform:translate(-50%,-50%) rotateX(67deg);border-radius:50%;border:3px solid #009cff96;box-shadow:0 0 13px #00afff9a,0 0 42px #008dff63,inset 0 0 42px #006bef80,0 0 0 23px #0057ce16,0 0 0 37px #2e93ff19;pointer-events:none}.halo:before,.halo:after{content:"";position:absolute;inset:28px 25px;border-radius:50%;border:1px solid #26ccff6b;box-shadow:0 0 16px #02b4ff88}.halo:after{inset:53px 55px;border-color:#9beeff30}
+.orbital-guide{position:absolute;z-index:1;left:50%;top:49%;width:min(1120px,92%);height:min(320px,51%);transform:translate(-50%,-50%);border:1px solid rgba(37,152,246,.18);border-radius:50%;box-shadow:0 0 22px #015ebc18;pointer-events:none}.orbital-guide:after{content:"";position:absolute;inset:12px;border:1px dashed #0d9ee029;border-radius:50%}
+.planet-halo{position:absolute;z-index:48;left:50%;top:49%;width:clamp(320px,29vw,475px);aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#008fff21 35%,#00afff18 54%,transparent 72%);filter:blur(20px);pointer-events:none}
+.world{position:absolute;z-index:60;left:50%;top:49%;width:clamp(300px,26vw,440px);aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;animation:levitate 5.8s ease-in-out infinite alternate;filter:drop-shadow(0 0 21px #00a7ffae) drop-shadow(0 0 48px #0068ffa0)}.world img{width:100%;height:100%;object-fit:cover;clip-path:circle(47% at 50% 50%);-webkit-user-drag:none}
+.world:before{content:"";position:absolute;inset:3%;border:1px solid #b5fbff52;border-radius:50%;box-shadow:0 0 14px #00afff7f,inset 0 0 24px #016eff5c;pointer-events:none}.world:after{content:"";position:absolute;inset:-5%;border-radius:50%;border:1px dashed #2cc7ff33;transform:rotate(-14deg);pointer-events:none;animation:spin 40s linear infinite}
+@keyframes levitate{0%{translate:0 -7px}100%{translate:0 8px}}@keyframes spin{to{transform:rotate(346deg)}}
+/* cartões */
+.orbit-cards{position:absolute;inset:0;pointer-events:none}
+.orbit-card{position:absolute;left:50%;top:50%;width:clamp(172px,14.5vw,226px);height:clamp(86px,7.2vw,110px);border:1px solid rgba(60,177,255,.68);border-radius:13px;text-align:left;color:#edfaff;background:linear-gradient(135deg,rgba(8,48,84,.86),rgba(2,19,41,.92) 68%),radial-gradient(circle at 18% 8%,#0871d9bb,transparent 72%);box-shadow:0 13px 22px #000a,inset 0 1px 12px #35bdf421,0 0 16px #078bff3f;display:flex;align-items:center;gap:12px;padding:13px;pointer-events:auto;transform-origin:center;will-change:transform;backface-visibility:hidden;overflow:hidden;isolation:isolate}
+.orbit-card:before{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(115deg,transparent 0%,#61d6ff12 44%,transparent 72%);pointer-events:none}.orbit-card:after{content:"";position:absolute;inset:4px;border:1px solid #a0edff13;border-radius:9px;pointer-events:none}
+.orbit-card.atras{pointer-events:none}
+.card-icon{flex:0 0 auto;width:42px;height:42px;display:grid;place-items:center;border:1px solid #25b9ff62;border-radius:10px;background:#062c4ec9;color:#46dfff;box-shadow:0 0 13px #038fff3d,inset 0 0 9px #1b8df722}.card-icon svg{height:25px;width:25px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.card-copy{min-width:0;flex:1}.card-title{font-size:clamp(12px,1.1vw,15px);font-weight:760;line-height:1.25}.card-info{font-size:10.5px;color:#a5cee3;line-height:1.35;margin-top:5px}
+.enter-icon{display:grid;place-items:center;flex:0 0 auto;height:24px;width:24px;border-radius:50%;border:1px solid #2eb8f4aa;color:#69e5ff;font-size:15px;line-height:1;background:#0635597a}
+.orbit-card.hovered{border:1.5px solid #77e5ff;box-shadow:0 19px 44px #000c,0 0 23px #01b6ffbd,inset 0 0 27px #00c5ff47;filter:brightness(1.16)}.orbit-card.hovered .card-icon{color:#e4ffff;border-color:#49eaff;background:#076fa5}
+.orbit-card.search-muted{filter:grayscale(.75) brightness(.33)}
+/* bloqueado: discreto, com cadeado; não abre */
+.orbit-card.bloq{border-color:rgba(120,150,175,.45);background:linear-gradient(135deg,rgba(14,30,48,.9),rgba(4,14,28,.94) 70%);color:#b9cad6}.orbit-card.bloq .card-icon{color:#7f9db2;border-color:#3d5a7066;background:#0a1e31c9;box-shadow:none}.orbit-card.bloq .enter-icon{border-color:#4a627566;color:#8aa3b5;background:#0a1a2a;font-size:12px}
+.orbit-card.bloq.hovered{border-color:#8fb3cc;box-shadow:0 19px 44px #000c,0 0 14px #5c86a566;filter:none}
+.orbit-dot{position:absolute;z-index:3;left:50%;bottom:58px;display:flex;gap:8px;transform:translateX(-50%);pointer-events:none}.orbit-dot span{width:6px;height:6px;background:#247cb4;border-radius:50%;box-shadow:0 0 8px #0a7bde70}.orbit-dot span.selected{background:#45eaff;box-shadow:0 0 10px #41eeff}
+.turn{position:absolute;z-index:110;top:50%;width:44px;height:44px;display:grid;place-items:center;border-radius:50%;border:1px solid #369bd3b7;background:#051b31c2;box-shadow:0 0 12px #0b8af039;color:#bbf1ff;font-size:28px;line-height:1;transform:translateY(-50%)}.turn:hover{color:white;background:#0e6ea4e8}.turn.prev{left:18px}.turn.next{right:18px}
+.tips{position:absolute;z-index:110;bottom:20px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;white-space:nowrap;color:#9dc8dc;letter-spacing:.4px;font-size:11px;text-shadow:0 3px 18px #000}.tips .sep{color:#226b94}.tips b{color:#45deff}
+.dock{position:absolute;z-index:110;right:36px;bottom:50px;display:flex;gap:9px}.dock button{height:32px;border:1px solid #1d86be74;border-radius:16px;background:#061e36bd;padding:0 13px;color:#bde5fb;font-size:10.5px}.dock button:hover{background:#0c4c75}
+.footer{position:absolute;z-index:105;bottom:0;left:var(--side);right:0;height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 26px;background:linear-gradient(180deg,transparent,#010717cb);font-size:9px;color:#8baeca;letter-spacing:1.3px;transition:left .25s ease}.footer b{color:#1bd1ff}
+/* grade (alternativa acessível à órbita) */
+.grid-view{position:absolute;z-index:120;inset:0;padding:24px 34px 70px;overflow:auto;background:linear-gradient(180deg,#020b1bf2,#03142af2);display:none}.grid-view.visible{display:block}
+.grid-view h2{margin:0 0 4px;font-size:20px}.grid-view p{margin:0 0 18px;color:#9dc1d8;font-size:12.5px}
+.gv-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}.gv-list .orbit-card{position:relative;left:auto;top:auto;width:auto;height:96px;transform:none!important;opacity:1!important}
+.empty-msg{position:absolute;z-index:70;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;color:#a8c8dd;font-size:13px;background:#031428d9;border:1px solid #1d6fa066;border-radius:12px;padding:14px 18px;display:none}
+/* janela */
+.modal-backdrop{position:absolute;inset:0;z-index:400;background:#010916ad;display:none;place-items:center;backdrop-filter:blur(8px)}.modal-backdrop.visible{display:grid}
+.modal{width:min(480px,calc(100vw - 40px));padding:28px;background:linear-gradient(155deg,#082b4d,#041326);border:1px solid #35bcf7;border-radius:20px;box-shadow:0 25px 85px #000e,0 0 45px #078fdc5c}.modal-title{font-weight:800;font-size:24px;margin:7px 0 9px}.modal .eyebrow{font-size:10px;letter-spacing:2px;color:#63ddff}.modal p{color:#b9d4e3;font-size:13px;line-height:1.7;margin:0}
+.modal button{border:1px solid #2abcfb;border-radius:9px;padding:11px 17px;background:#0a6ba6;color:white;font-size:13px;margin-top:16px}.modal .close{float:right;background:transparent;border:0;padding:2px;font-size:22px;margin:0;color:#a8d7ea}
+@media(max-width:1350px){.kpi:nth-child(3){display:none}.overview{left:32px;right:28px}.world{width:clamp(270px,28vw,390px)}.orbit-card{width:192px}}
+@media(max-width:990px){.app.menu-expandido{--side:74px}.menu-expandido .nav-btn{justify-content:center;padding:0}.menu-expandido .nav-label,.menu-expandido .nav-lock,.menu-expandido .nav-foot,.menu-expandido .side-tit{display:none}.top-search{width:220px}.kpis{display:none}.overview{left:22px}.world{width:clamp(250px,34vw,360px)}.orbit-card{width:168px;height:88px;padding:10px;gap:8px}.card-icon{width:34px;height:34px}.card-icon svg{width:20px;height:20px}.card-info{font-size:9px}.turn.prev{left:5px}.turn.next{right:5px}.top-btn .lbl{display:none}}
+@media(max-width:640px){.app,body,html{min-height:540px}.top{height:62px;padding:0 12px;gap:8px}.sidebar{top:62px}.app.menu-expandido,.app.menu-recolhido{--side:0px}.sidebar{display:none}.main{top:62px}.vmark{font-size:34px}.logotype{font-size:17px}.submark{font-size:7px}.top-search{display:none}.overview{top:18px;left:18px;right:12px}.heading h1{font-size:33px}.heading .caption{max-width:270px;font-size:11px}.stage{top:136px;bottom:36px}.world{width:clamp(200px,48vw,270px)}.orbit-card{width:124px;height:76px;padding:8px;gap:6px;border-radius:9px}.card-icon{height:27px;width:27px;border-radius:6px}.card-icon svg{width:17px;height:17px}.card-title{font-size:11px}.card-info,.enter-icon{display:none}.halo{height:135px}.tips{display:none}.dock{bottom:34px;right:12px}.dock button{font-size:9px;padding:0 9px}.turn{width:34px;height:34px}.footer{height:30px;font-size:8px;letter-spacing:.2px;padding:0 12px}.footer span:last-child{display:none}.grid-view{padding:16px 14px 50px}}
+@media(prefers-reduced-motion:reduce){.world,.world:after{animation:none}.sidebar,.main,.footer{transition:none}}
+</style>
+</head>
+<body>
+<div class="app menu-oculto" id="app"><div class="room"></div>
+<header class="top">
+  <button type="button" class="top-btn" id="btnMenu" aria-label="Mostrar ou ocultar o menu lateral" title="Menu de sistemas"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+  <a class="logo" href="./" aria-label="VYONX IOT CITY"><div class="vmark">V</div><div><div class="logotype">VYON<span>X</span></div><div class="submark" id="marcaSub">SMART CITIES PLATFORM</div></div></a>
+  <div class="top-search"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7.5"/><path d="m17 17 5 5"/></svg><input id="search" aria-label="Buscar sistema" placeholder="Buscar sistema…" autocomplete="off"></div>
+  <div class="top-right">
+    <button type="button" class="top-btn" id="btnGrade" title="Ver os sistemas em grade"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="lbl">Grade</span></button>
+    <a class="top-btn" href="admin.html" title="Administração do portal (configurar botões)" aria-label="Administração do portal"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M4.9 4.9 7 7m10 10 2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></a>
+  </div>
+</header>
+<aside class="sidebar" id="sidebar" aria-label="Sistemas"><div class="side-tit">SISTEMAS</div><nav class="nav-group" id="nav"></nav><div class="nav-foot">ECOSSISTEMA<strong>VYONX</strong></div></aside>
+<main class="main">
+  <div class="overview"><div class="heading"><h1 id="titulo">IOT <span>CITY</span></h1><div class="eyebrow" id="eyebrow">VYONX · ECOSSISTEMA DE SISTEMAS</div><p class="caption" id="legenda"></p></div><div class="kpis" id="kpis"></div></div>
+  <section id="stage" class="stage" aria-label="Sistemas em órbita 3D" tabindex="0">
+    <div class="base-glow"></div><div class="halo"></div><div class="orbital-guide"></div><div class="planet-halo"></div>
+    <div class="world" id="world"><img src="terra.webp" alt="" draggable="false"></div>
+    <div class="orbit-cards" id="cards"></div>
+    <div class="empty-msg" id="vazio"></div>
+    <button type="button" class="turn prev" id="prev" aria-label="Girar para a esquerda">‹</button><button type="button" class="turn next" id="next" aria-label="Girar para a direita">›</button>
+    <div class="orbit-dot" id="dots" aria-hidden="true"></div>
+    <div class="tips"><span><b>↔</b> Arraste para girar</span><span class="sep">•</span><span><b>↗</b> Passe o mouse para ampliar</span><span class="sep">•</span><span>Clique para abrir</span></div>
+  </section>
+  <div class="dock"><button type="button" id="autoplay">Ⅱ Pausar rotação</button><button type="button" id="restart">↻ Reiniciar</button></div>
+  <section class="grid-view" id="grade" aria-label="Sistemas em grade"><h2>Todos os sistemas</h2><p>Mesma lista da órbita. Clique para abrir.</p><div class="gv-list" id="gradeLista"></div></section>
+</main>
+<div class="footer"><span><b>VYONX</b> &nbsp;|&nbsp; <span id="rodTitulo">IOT CITY</span></span><span id="rodape">TECNOLOGIA • CONECTIVIDADE • SEGURANÇA • INTELIGÊNCIA</span></div>
+<div class="modal-backdrop" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><div class="modal"><button class="close" id="modalClose" type="button" aria-label="Fechar">×</button><div class="eyebrow">IOT CITY • ECOSSISTEMA VYONX</div><h2 id="modalTitle" class="modal-title">Sistema</h2><p id="modalBody"></p><button id="modalOkay" type="button">Voltar ao IOT CITY</button></div></div>
+</div>
+<script src="icones.js"></script>
+<script>
+(()=>{'use strict';
+/* IOT CITY — VITRINE de sistemas: sem controle de acesso. Cada sistema tem o próprio login.
+   Botões e aparência vêm do banco (portal_app / portal_config, leitura pública). */
+const $=id=>document.getElementById(id);
+const PADRAO=[ // usado só se o banco não responder
+ {nome:'ERP Materiais',descricao:'Estoque e produção',icone:'materiais',url:'https://fcah.fireware.com.br/#materiais',abrir_em:'nova',exibicao:'visivel'},
+ {nome:'Controle Financeiro',descricao:'Fluxo de caixa e indicadores',icone:'financeiro',url:'https://fcah.fireware.com.br/',abrir_em:'nova',exibicao:'visivel'},
+ {nome:'Semáforos',descricao:'Mobilidade urbana',icone:'semaforos',url:'https://painel.brhtech.com.br/',abrir_em:'nova',exibicao:'visivel'}];
+let CFG={titulo:'IOT CITY',marca_sub:'SMART CITIES PLATFORM',eyebrow:'VYONX · ECOSSISTEMA DE SISTEMAS',legenda:'',menu_lateral:'oculto',rotacao_auto:true,velocidade:1,ampliacao:1.3,mostrar_kpis:true,kpis:[],rodape:''};
+let APPS=[];
+const stage=$('stage'),container=$('cards'),dots=$('dots'),search=$('search'),appEl=$('app');
+const circle=2*Math.PI;let angle=0.17,auto=true,hover=-1,destaque=-1,destaqueAte=0,drag=false,ptr=-1,prevX=0,total=0,velocity=0,freeVelocity=0,lastTime=performance.now(),gestureIndex=-1,initialAngle=angle,alvo=null;
+const reduceMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let nodes=[],dotnodes=[];
+
+function urlSegura(u){ return typeof u==='string' && (/^https:\/\/[a-z0-9.-]+(:\d+)?(\/.*)?$/i.test(u) || /^\/(?!\/)/.test(u)); }
+function abrir(i){ const a=APPS[i]; if(!a) return;
+  if(a.exibicao==='bloqueado') return dialogo(a.nome, a.mensagem_bloqueio || 'Este sistema não está disponível no momento.');
+  if(!urlSegura(a.url)) return dialogo(a.nome, 'O endereço deste sistema ainda não foi configurado.');
+  if(a.abrir_em==='mesma') location.href=a.url; else window.open(a.url,'_blank','noopener');
+}
+function cardHTML(a){ const b=a.exibicao==='bloqueado';
+  return '<div class="card-icon">'+iotIcone(a.icone)+'</div><div class="card-copy"><div class="card-title"></div><div class="card-info"></div></div><span class="enter-icon" title="'+(b?'Indisponível':'Abrir')+'">'+(b?'🔒︎':'↗')+'</span>'; }
+function preencher(el,a){ el.querySelector('.card-title').textContent=a.nome; el.querySelector('.card-info').textContent=a.descricao||''; }
+function montar(){
+  container.innerHTML=''; dots.innerHTML=''; $('nav').innerHTML=''; $('gradeLista').innerHTML='';
+  nodes=APPS.map((a,i)=>{
+    const b=document.createElement('button');b.type='button';b.className='orbit-card'+(a.exibicao==='bloqueado'?' bloq':'');b.dataset.idx=i;
+    b.setAttribute('aria-label',(a.exibicao==='bloqueado'?'Indisponível: ':'Abrir ')+a.nome);b.innerHTML=cardHTML(a);preencher(b,a);
+    b.addEventListener('pointerenter',e=>{if(!drag&&e.pointerType!=='touch')hover=i;});
+    b.addEventListener('pointerleave',()=>{if(!drag&&hover===i)hover=-1;});
+    b.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();abrir(i);}});
+    container.appendChild(b);
+    // menu lateral: MESMA lista e mesma ordem da órbita
+    const n=document.createElement('button');n.type='button';n.className='nav-btn'+(a.exibicao==='bloqueado'?' bloq':'');n.title=a.nome+(a.descricao?' — '+a.descricao:'');
+    n.innerHTML='<span class="navico">'+iotIcone(a.icone)+'</span><span class="nav-label"></span>'+(a.exibicao==='bloqueado'?'<span class="nav-lock">🔒︎</span>':'');
+    n.querySelector('.nav-label').textContent=a.nome; n.addEventListener('click',()=>focar(i)); $('nav').appendChild(n);
+    // grade: mesma lista
+    const g=document.createElement('button');g.type='button';g.className='orbit-card'+(a.exibicao==='bloqueado'?' bloq':'');g.innerHTML=cardHTML(a);preencher(g,a);g.addEventListener('click',()=>abrir(i));$('gradeLista').appendChild(g);
+    const s=document.createElement('span');dots.appendChild(s);
+    return {b,n,scale:.76};
+  });
+  dotnodes=[...dots.children];
+  const v=$('vazio'); v.style.display=APPS.length?'none':'block'; v.textContent='Nenhum sistema configurado ainda.';
+  $('prev').style.display=$('next').style.display=APPS.length>1?'':'none';
+}
+/* gira a órbita até o cartão e o destaca (sincronização menu lateral → órbita) */
+function focar(i){ const N=APPS.length; if(!N) return;
+  const duas=N>12, M=duas?Math.ceil(N/2):N, k=duas?Math.floor(i/2):i, off=duas&&i%2?circle/M/2:0;
+  let t=-(k*circle/M+off); const d=((t-angle)%circle+circle*1.5)%circle-circle/2; alvo=angle+d;
+  destaque=i; destaqueAte=performance.now()+3500; freeVelocity=0; fecharGrade();
+  nodes.forEach((x,k)=>x.n.classList.toggle('active',k===i)); }
+function layout(dt){
+  const N=APPS.length; if(!N) return;
+  const w=stage.clientWidth,h=stage.clientHeight, duas=N>12;
+  const xc=w/2,yc=h*.49, world=$('world').getBoundingClientRect(), raioTerra=world.width*.47;
+  const q=search.value.trim().toLocaleLowerCase('pt-BR');
+  const agora=performance.now(); if(destaque>=0&&agora>destaqueAte&&hover!==destaque){ destaque=-1; nodes.forEach(x=>x.n.classList.remove('active')); }
+  nodes.forEach((entry,i)=>{
+    const anel=duas?i%2:0, k=duas?Math.floor(i/2):i, M=duas?Math.ceil(N/2):N;
+    const rx=Math.min(w*.35,480)*(anel?.72:1), ry=Math.min(h*.275,168)*(anel?.7:1);
+    const t=angle+k*circle/M+(anel?circle/M/2:0);
+    const depth=Math.cos(t),x=xc+Math.sin(t)*rx,y=yc+depth*ry;
+    const hit=hover===i||destaque===i, base=.69+(.27*(depth+1)/2)*(anel?.92:1);
+    const target=base*(hit?CFG.ampliacao:1);
+    entry.scale+=(target-entry.scale)*Math.min(1,dt*.21);
+    const el=entry.b, z=hit?115:Math.round(55+45*depth);
+    el.style.left=x+'px';el.style.top=y+'px';
+    el.style.transform='translate(-50%,-50%) perspective(900px) rotateY('+(-Math.sin(t)*15)+'deg) rotateX('+(-depth*3)+'deg) scale('+entry.scale+')';
+    el.style.zIndex=String(z);
+    el.style.opacity=String(hit?1:(.5+((depth+1)/2)*.5));
+    el.classList.toggle('hovered',hit);
+    // atrás da Terra (camada abaixo do globo e sobre o disco): sem clique
+    const atras=z<60&&Math.abs(x-xc)<raioTerra*.95; el.classList.toggle('atras',atras); el.tabIndex=atras?-1:0;
+    const a=APPS[i], muted=q&&!((a.nome+' '+(a.descricao||'')+' '+(a.categoria||'')).toLocaleLowerCase('pt-BR').includes(q));
+    el.classList.toggle('search-muted',Boolean(muted));
+  });
+  const front=Math.round(((circle-(angle%circle)+circle)%circle)/circle*N)%N;
+  dotnodes.forEach((d,i)=>d.classList.toggle('selected',i===front));
+}
+function dialogo(title,msg){ $('modalTitle').textContent=title; $('modalBody').textContent=msg; $('modal').classList.add('visible'); }
+function fecharDialogo(){ $('modal').classList.remove('visible'); }
+$('modalClose').addEventListener('click',fecharDialogo);$('modalOkay').addEventListener('click',fecharDialogo);$('modal').addEventListener('click',e=>{if(e.target.id==='modal')fecharDialogo()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){fecharDialogo();fecharGrade();}});
+function updateAuto(){ $('autoplay').textContent=auto?'Ⅱ Pausar rotação':'▷ Iniciar rotação'; }
+stage.addEventListener('pointerdown',e=>{
+  if(e.button!==0||e.target.closest('.turn'))return;
+  ptr=e.pointerId;drag=true;prevX=e.clientX;total=0;velocity=0;freeVelocity=0;alvo=null;
+  const c=e.target.closest('.orbit-card'); gestureIndex=Number(c&&!c.classList.contains('atras')?c.dataset.idx:-1);
+  if(c)e.preventDefault(); stage.setPointerCapture(ptr);stage.classList.add('grabbing');hover=-1;
+});
+stage.addEventListener('pointermove',e=>{ if(!drag||e.pointerId!==ptr)return; const dx=e.clientX-prevX;prevX=e.clientX;total+=Math.abs(dx);velocity=dx*.0065;angle+=velocity; });
+function endDrag(e){ if(!drag||e.pointerId!==ptr)return;
+  drag=false;stage.classList.remove('grabbing');freeVelocity=(total>6)?velocity:0;
+  if(stage.hasPointerCapture(ptr))stage.releasePointerCapture(ptr);
+  if(total<=7&&gestureIndex>=0)abrir(gestureIndex);
+  gestureIndex=-1;ptr=-1;setTimeout(()=>total=0,50); }
+stage.addEventListener('pointerup',endDrag);stage.addEventListener('pointercancel',endDrag);
+stage.addEventListener('pointerleave',()=>{if(!drag)hover=-1;});
+const rotateStep=d=>{ const N=Math.max(1,APPS.length), M=N>12?Math.ceil(N/2):N; alvo=(alvo??angle)+d*circle/M; hover=-1; freeVelocity=0; };
+$('prev').addEventListener('click',()=>rotateStep(-1));$('next').addEventListener('click',()=>rotateStep(1));
+$('autoplay').addEventListener('click',()=>{auto=!auto;freeVelocity=0;updateAuto()});
+$('restart').addEventListener('click',()=>{alvo=null;angle=initialAngle;hover=-1;destaque=-1;freeVelocity=0;search.value='';auto=CFG.rotacao_auto&&!reduceMotion;updateAuto()});
+stage.addEventListener('keydown',e=>{ if(e.target!==stage)return; if(e.key==='ArrowRight'){rotateStep(1);e.preventDefault()} else if(e.key==='ArrowLeft'){rotateStep(-1);e.preventDefault()} });
+search.addEventListener('keydown',e=>{ if(e.key==='Enter'&&search.value.trim()){ const q=search.value.trim().toLocaleLowerCase('pt-BR');
+  const i=APPS.findIndex(a=>(a.nome+' '+(a.descricao||'')+' '+(a.categoria||'')).toLocaleLowerCase('pt-BR').includes(q)); if(i>=0){focar(i);stage.focus();} } });
+// menu lateral: oculto / recolhido / expandido (o usuário alterna; padrão vem da configuração)
+const MENUS=['oculto','expandido','recolhido'];
+function menu(m){ appEl.classList.remove('menu-oculto','menu-recolhido','menu-expandido'); appEl.classList.add('menu-'+m); $('btnMenu').classList.toggle('on',m!=='oculto'); try{localStorage.setItem('iotcity-menu',m)}catch(_){} }
+$('btnMenu').addEventListener('click',()=>{ const at=MENUS.find(m=>appEl.classList.contains('menu-'+m))||'oculto'; menu(MENUS[(MENUS.indexOf(at)+1)%3]); });
+function fecharGrade(){ $('grade').classList.remove('visible'); $('btnGrade').classList.remove('on'); }
+$('btnGrade').addEventListener('click',()=>{ const v=$('grade').classList.toggle('visible'); $('btnGrade').classList.toggle('on',v); });
+function frame(now){ const dt=Math.min((now-lastTime)/16.667,2.5); lastTime=now;
+  if(!drag&&!$('modal').classList.contains('visible')){
+    if(alvo!==null){ const d=alvo-angle; if(Math.abs(d)<.002){angle=alvo;alvo=null;} else angle+=d*Math.min(1,.12*dt); }
+    else if(hover<0&&destaque<0){ if(Math.abs(freeVelocity)>.00007){angle+=freeVelocity*dt;freeVelocity*=Math.pow(.95,dt)} else if(auto){angle+=.00175*CFG.velocidade*dt} }
+  }
+  layout(dt); requestAnimationFrame(frame); }
+function aplicarConfig(){
+  const t=(CFG.titulo||'IOT CITY').trim(), p=t.split(/\s+/); const h=$('titulo'); h.textContent=p[0]+' ';
+  if(p.length>1){ const s=document.createElement('span'); s.textContent=p.slice(1).join(' '); h.appendChild(s); }
+  document.title=t+' | VYONX'; $('marcaSub').textContent=CFG.marca_sub||''; $('eyebrow').textContent=CFG.eyebrow||''; $('legenda').textContent=CFG.legenda||'';
+  $('rodape').textContent=CFG.rodape||''; $('rodTitulo').textContent=t;
+  const k=$('kpis'); k.innerHTML=''; if(CFG.mostrar_kpis){ const lista=[{v:String(APPS.filter(a=>a.exibicao==='visivel').length).padStart(2,'0'),l:'Sistemas disponíveis'},...(Array.isArray(CFG.kpis)?CFG.kpis:[])];
+    lista.slice(0,3).forEach(x=>{ const d=document.createElement('div'); d.className='kpi'; d.innerHTML='<div class="kvalue"></div><div class="klabel"></div>'; d.firstChild.textContent=x.v||''; d.lastChild.textContent=x.l||''; k.appendChild(d); }); }
+  let m=CFG.menu_lateral; try{ m=localStorage.getItem('iotcity-menu')||m; }catch(_){} menu(MENUS.includes(m)?m:'oculto');
+  auto=CFG.rotacao_auto&&!reduceMotion; updateAuto();
+}
+async function carregar(){
+  const H={apikey:IOT_SUPA.key,Authorization:'Bearer '+IOT_SUPA.key};
+  try{
+    const [ra,rc]=await Promise.all([
+      fetch(IOT_SUPA.url+'/rest/v1/portal_app?select=id,nome,descricao,icone,url,abrir_em,exibicao,mensagem_bloqueio,categoria,ordem&exibicao=neq.oculto&order=ordem.asc,id.asc',{headers:H}),
+      fetch(IOT_SUPA.url+'/rest/v1/portal_config?select=*&id=eq.1',{headers:H})]);
+    if(!ra.ok) throw new Error('apps '+ra.status);
+    APPS=await ra.json(); const c=rc.ok?await rc.json():[]; if(c[0]) CFG=Object.assign(CFG,c[0]);
+  }catch(err){ console.warn('IOT CITY: usando lista padrão',err); APPS=PADRAO; }
+  montar(); aplicarConfig();
+}
+carregar(); requestAnimationFrame(frame);
+window.IOTCity={focar,getAngle:()=>angle,apps:()=>APPS.map(a=>a.nome)};
+})();
+</script>
+</body></html>
