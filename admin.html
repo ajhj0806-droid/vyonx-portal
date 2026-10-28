@@ -51,7 +51,11 @@ const esc=s=>(s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt
 const EXIB={visivel:'Visível',bloqueado:'Bloqueado (cadeado)',oculto:'Oculto'};
 let APPS=[],CFG=null,EDIT=null,USER=null;
 function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(t._h);t._h=setTimeout(()=>t.className='toast',2600);}
-const urlOk=u=>!u||/^https:\/\/[a-z0-9.-]+(:\d+)?(\/.*)?$/i.test(u)||/^\/(?!\/)/.test(u);
+const urlOk=u=>!u||/^https?:\/\/[a-z0-9.-]+(:\d{1,5})?([/?#].*)?$/i.test(u)||/^\/(?!\/)/.test(u);
+/* completa o protocolo: localhost:5180 → http://localhost:5180 · exemplo.com.br → https://exemplo.com.br */
+const normUrl=u=>{ u=(u||'').trim(); if(!u||/^[a-z][a-z0-9+.-]*:\/\//i.test(u)||u.startsWith('/')) return u;
+  if(/^[a-z][a-z0-9+.-]*:(?!\d)/i.test(u)) return u; /* javascript:, mailto: etc. — ficam como estão (e são recusados) */
+  return (/^(localhost|127\.\d+\.\d+\.\d+|\d+\.\d+\.\d+\.\d+)(:\d+)?([/?#]|$)/i.test(u)?'http://':'https://')+u; };
 
 async function inicio(){
   const {data}=await SB.auth.getSession();
@@ -135,11 +139,11 @@ function render(){
 }
 function editor(){
   const box=R.querySelector('#editor'); if(!box||!EDIT) return; const e=EDIT;
-  box.innerHTML=`<div class="card"><h2>${e.id?'Editar botão':'Novo botão'}</h2><p class="desc">O endereço precisa começar com <b>https://</b> (ou ser um caminho deste site, como /erp/). O login continua sendo o do próprio sistema.</p>
+  box.innerHTML=`<div class="card"><h2>${e.id?'Editar botão':'Novo botão'}</h2><p class="desc">Endereço com <b>https://</b> ou <b>http://</b> (aceita porta, ex.: <b>http://localhost:5180</b>) ou caminho deste site (/erp/). Se digitar sem o protocolo, ele é completado. Atenção: <b>localhost</b> só abre no computador onde o sistema está rodando. O login continua sendo o do próprio sistema.</p>
    <div class="split"><form id="fe" class="form">
     <label class="f">Nome *<input class="field" name="nome" value="${esc(e.nome)}" maxlength="40" required></label>
     <label class="f">Descrição<input class="field" name="descricao" value="${esc(e.descricao)}" maxlength="60"></label>
-    <label class="f full">Endereço (URL)<input class="field" name="url" value="${esc(e.url)}" placeholder="https://…"></label>
+    <label class="f full">Endereço (URL)<input class="field" name="url" value="${esc(e.url)}" placeholder="https://sistema.com.br  ·  http://localhost:5180"></label>
     <label class="f">Abrir em<select class="field" name="abrir_em"><option value="nova" ${e.abrir_em!=='mesma'?'selected':''}>Nova aba</option><option value="mesma" ${e.abrir_em==='mesma'?'selected':''}>Mesma aba</option></select></label>
     <label class="f">Exibição<select class="field" name="exibicao">${Object.entries(EXIB).map(([k,l])=>`<option value="${k}" ${e.exibicao===k?'selected':''}>${l}</option>`).join('')}</select></label>
     <label class="f full">Mensagem quando bloqueado<input class="field" name="mensagem_bloqueio" value="${esc(e.mensagem_bloqueio)}" maxlength="160" placeholder="Ex.: Em implantação — disponível em breve."></label>
@@ -156,10 +160,10 @@ function editor(){
   box.querySelectorAll('[data-ic]').forEach(b=>b.onclick=()=>{e.icone=b.dataset.ic;box.querySelectorAll('.ip').forEach(x=>x.classList.toggle('on',x===b));prev();});
   box.querySelector('#cancel').onclick=()=>{EDIT=null;render();};
   f.onsubmit=async ev=>{ev.preventDefault(); const er=box.querySelector('#erro');
-    const row={nome:f.nome.value.trim(),descricao:f.descricao.value.trim()||null,url:f.url.value.trim()||null,abrir_em:f.abrir_em.value,exibicao:f.exibicao.value,
+    const row={nome:f.nome.value.trim(),descricao:f.descricao.value.trim()||null,url:normUrl(f.url.value)||null,abrir_em:f.abrir_em.value,exibicao:f.exibicao.value,
       mensagem_bloqueio:f.mensagem_bloqueio.value.trim()||null,categoria:f.categoria.value.trim()||null,ordem:parseInt(f.ordem.value,10)||0,icone:e.icone,atualizado_em:new Date().toISOString()};
     if(!row.nome){er.innerHTML='<div class="msg err">Informe o nome.</div>';return;}
-    if(!urlOk(row.url)){er.innerHTML='<div class="msg err">Endereço inválido: use https://… ou um caminho deste site (/…).</div>';return;}
+    if(!urlOk(row.url)){er.innerHTML='<div class="msg err">Endereço inválido. Exemplos aceitos: https://sistema.com.br · http://localhost:5180 · /erp/</div>';return;}
     if(row.exibicao==='visivel'&&!row.url){if(!confirm('Botão visível sem endereço: ao clicar, o portal avisa que o endereço não foi configurado. Salvar assim?'))return;}
     const r=e.id?await SB.from('portal_app').update(row).eq('id',e.id):await SB.from('portal_app').insert(row);
     if(r.error){er.innerHTML='<div class="msg err">'+esc(r.error.message)+'</div>';return;}
