@@ -35,8 +35,6 @@ tr.sel td{background:#0b2d4b}
 .toast{position:fixed;right:20px;bottom:20px;background:#0a6ba6;border:1px solid #2abcfb;padding:11px 16px;border-radius:10px;font-size:13px;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none;z-index:50}.toast.show{opacity:1;transform:none}.toast.err{background:#5a1f19;border-color:#c0574a}
 .hint{font-size:11.5px;color:var(--muted);font-weight:400;line-height:1.5}
 .filtro{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.filtro button{height:30px;padding:0 12px;border-radius:16px;border:1px solid var(--line);background:#03152a;font-size:12px;color:#a9cbe0}.filtro button.on{border-color:var(--cyan);color:#fff;background:#0b4467}
-.globo{position:relative;width:260px;aspect-ratio:1;margin:0 auto}.globo img{width:100%;height:100%;clip-path:circle(47% at 50% 50%);filter:drop-shadow(0 0 18px #00a7ffae)}
-.globo .pin{position:absolute;width:0;height:0}.globo .pin svg{position:absolute;left:-11px;top:-31px;width:22px;height:31px;filter:drop-shadow(0 0 6px #ff4f6acc)}
 .modos-chk{display:flex;gap:14px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#03152a}
 </style>
 </head>
@@ -62,15 +60,6 @@ const urlOk=u=>!u||/^https?:\/\/[a-z0-9.-]+(:\d{1,5})?([/?#].*)?$/i.test(u)||/^\
 const normUrl=u=>{ u=(u||'').trim(); if(!u||/^[a-z][a-z0-9+.-]*:\/\//i.test(u)||u.startsWith('/')) return u;
   if(/^[a-z][a-z0-9+.-]*:(?!\d)/i.test(u)) return u; /* javascript:, mailto: etc. — ficam como estão (e são recusados) */
   return (/^(localhost|127\.\d+\.\d+\.\d+|\d+\.\d+\.\d+\.\d+)(:\d+)?([/?#]|$)/i.test(u)?'http://':'https://')+u; };
-/* mesma projeção do portal (terra.webp calibrada) — prévia do alfinete */
-const TERRA={la0:14,lo0:-67.45,R:365.29,cx:462.24,cy:406.37,rot:-0.18,disco:[400,400,355],lado:800};
-function pinPos(lat,lon){ const r=Math.PI/180,f=lat*r,l=(lon-TERRA.lo0)*r,f0=TERRA.la0*r;
-  if(Math.sin(f0)*Math.sin(f)+Math.cos(f0)*Math.cos(f)*Math.cos(l)<0.2) return null;
-  const x=TERRA.R*Math.cos(f)*Math.sin(l), y=TERRA.R*(Math.cos(f0)*Math.sin(f)-Math.sin(f0)*Math.cos(f)*Math.cos(l));
-  const c=Math.cos(TERRA.rot*r),s=Math.sin(TERRA.rot*r), X=TERRA.cx+x*c-y*s, Y=TERRA.cy-(x*s+y*c);
-  if(Math.hypot(X-TERRA.disco[0],Y-TERRA.disco[1])>TERRA.disco[2]) return null;
-  return {x:X/TERRA.lado*100,y:Y/TERRA.lado*100}; }
-const PIN='<svg viewBox="0 0 28 40"><path d="M14 0C6.3 0 0 6.1 0 13.7 0 24 14 40 14 40s14-16 14-26.3C28 6.1 21.7 0 14 0Z" fill="#ff4f6a" stroke="#ffd0d7" stroke-width="1.2"/><circle cx="14" cy="13.5" r="5.2" fill="#fff"/></svg>';
 async function funcao(body){ // chama a função de servidor e devolve a mensagem de erro em português
   const {data,error}=await SB.functions.invoke('portal-usuarios',{body});
   if(error){ let m=error.message; try{ const j=await error.context.json(); if(j&&j.erro) m=j.erro; }catch(_){} throw new Error(m); }
@@ -212,27 +201,16 @@ function editor(){
 
 /* ---------- cidade ---------- */
 function abaCidade(box){
-  const c=CFG, coord=(c.cidade_lat!=null&&c.cidade_lon!=null)?c.cidade_lat+', '+c.cidade_lon:'';
-  box.innerHTML=`<div class="card"><h2>Cidade (ou empresa) do portal</h2><p class="desc">O nome aparece ao lado de IOT CITY nos modos Visitante e Cliente, e o alfinete marca o local no globo.
-    Coordenadas: no Google Maps, clique com o botão direito no local e clique nos números (eles são copiados) — cole aqui.</p>
-   <div class="split"><form id="fc" class="form">
+  const c=CFG;
+  box.innerHTML=`<div class="card"><h2>Cidade (ou empresa) do portal</h2><p class="desc">O nome aparece ao lado de IOT CITY nos modos Visitante e Cliente.</p>
+   <form id="fc" class="form">
     <label class="f full">Nome exibido<input class="field" name="cidade_nome" value="${esc(c.cidade_nome)}" maxlength="40" placeholder="SÃO PAULO - SP"></label>
-    <label class="f full">Coordenadas (latitude, longitude)<input class="field" name="coord" value="${esc(coord)}" placeholder="-23.5505, -46.6333"></label>
-    <label class="chk full"><input type="checkbox" name="mostrar_alfinete" ${c.mostrar_alfinete?'checked':''}> Mostrar o alfinete no globo</label>
     <label class="f full">Texto do modo Visitante<textarea class="field" name="visitante_texto" maxlength="300">${esc(c.visitante_texto)}</textarea></label>
     <div class="full hint">Os serviços abertos ao público são os botões marcados como <span class="chip visitante">Visitante</span> na aba Botões.</div>
-    <div class="full" style="display:flex;justify-content:flex-end"><button class="btn pri" type="submit">Salvar cidade</button></div><div id="ce" class="full"></div></form>
-    <div><div class="f" style="margin-bottom:8px;text-align:center">Prévia do alfinete</div><div class="globo"><img src="terra.webp" alt=""><div class="pin" id="gpin">${PIN}</div></div><p class="hint" id="gmsg" style="text-align:center"></p></div></div></div>`;
+    <div class="full" style="display:flex;justify-content:flex-end"><button class="btn pri" type="submit">Salvar cidade</button></div></form></div>`;
   const f=box.querySelector('#fc');
-  const ler=()=>{ const m=f.coord.value.replace(/[°]/g,'').match(/^\s*(-?\d+(?:[.,]\d+)?)\s*[,; ]\s*(-?\d+(?:[.,]\d+)?)\s*$/); if(!m) return null;
-    const lat=parseFloat(m[1].replace(',','.')),lon=parseFloat(m[2].replace(',','.')); return Math.abs(lat)<=90&&Math.abs(lon)<=180?{lat,lon}:null; };
-  const prev=()=>{ const p=ler(), pin=box.querySelector('#gpin'), msg=box.querySelector('#gmsg'); const pos=p&&pinPos(p.lat,p.lon);
-    pin.style.display=pos?'':'none'; if(pos){pin.style.left=pos.x+'%';pin.style.top=pos.y+'%';}
-    msg.textContent=!f.coord.value.trim()?'Sem coordenadas: o alfinete não aparece.':!p?'Coordenadas inválidas. Exemplo: -23.5505, -46.6333':!pos?'Este local fica no lado do globo que não aparece na imagem — o alfinete não será mostrado.':''; };
-  f.oninput=prev; prev();
-  f.onsubmit=async e=>{ e.preventDefault(); const p=ler(); const er=box.querySelector('#ce');
-    if(f.coord.value.trim()&&!p){ er.innerHTML='<div class="msg err">Coordenadas inválidas. Exemplo: -23.5505, -46.6333</div>'; return; }
-    await salvarCfg({cidade_nome:f.cidade_nome.value.trim()||null,cidade_lat:p?p.lat:null,cidade_lon:p?p.lon:null,mostrar_alfinete:f.mostrar_alfinete.checked,visitante_texto:f.visitante_texto.value.trim()||null},'Cidade salva');
+  f.onsubmit=async e=>{ e.preventDefault();
+    await salvarCfg({cidade_nome:f.cidade_nome.value.trim()||null,visitante_texto:f.visitante_texto.value.trim()||null},'Cidade salva');
     render(); };
 }
 
