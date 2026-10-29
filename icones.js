@@ -25,4 +25,5 @@ window.iotIcone = function (k) {
   const i = window.IOT_ICONES[k] || window.IOT_ICONES.grade;
   return '<svg viewBox="0 0 24 24" aria-hidden="true">' + i.p + '</svg>';
 };
-window.IOT_SUPA = { url: 'https://ssssvouyqzvqebykoouh.supabase.co', key: 'sb_publishable_O6kuFJ7F_9EaGFpwdynmxA_Mj3O-qpU' };
+/* projeto Supabase próprio do portal (vyonx-iotcity) — nada de outros sistemas mora aqui */
+window.IOT_SUPA = { url: 'https://zuabqwshrbqkhcjzhkhq.supabase.co', key: 'sb_publishable_H-so_8bcoZFCN4qq-mRo4g_FMMuED9A' };

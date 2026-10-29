@@ -5,34 +5,39 @@
 <title>Administração · IOT CITY | VYONX</title>
 <meta name="robots" content="noindex">
 <style>
-:root{color-scheme:dark;--bg:#020a17;--panel:#061a2f;--panel2:#08223b;--line:#1d4f73;--txt:#e6f4ff;--muted:#8fb0c6;--cyan:#37d9ff;--blue:#0a6ba6;--red:#f07f6b;--ok:#36d39a}
+:root{color-scheme:dark;--bg:#020a17;--panel:#061a2f;--panel2:#08223b;--line:#1d4f73;--txt:#e6f4ff;--muted:#8fb0c6;--cyan:#37d9ff;--blue:#0a6ba6;--red:#f07f6b;--ok:#36d39a;--pin:#ff4f6a}
 *{box-sizing:border-box}body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;background:radial-gradient(ellipse at 70% 0%,#06325a66,transparent 60%),var(--bg);color:var(--txt);min-height:100vh}
 button,input,select,textarea{font:inherit;color:inherit}button{cursor:pointer}
 a{color:var(--cyan)}
 .top{display:flex;align-items:center;gap:14px;padding:14px 26px;border-bottom:1px solid #1e628a66;background:#020a1cf2;position:sticky;top:0;z-index:5}
 .vmark{font-size:34px;line-height:.9;font-weight:950;font-style:italic;letter-spacing:-6px;padding-right:6px;background:linear-gradient(132deg,#7ff3ff,#19c9fa 55%,#1362e9);-webkit-background-clip:text;background-clip:text;color:transparent}
 .top h1{font-size:16px;margin:0;letter-spacing:1px}.top h1 small{display:block;color:var(--muted);font-weight:500;font-size:11px;letter-spacing:.3px;margin-top:2px}.grow{flex:1}
-.btn{height:36px;padding:0 14px;border-radius:9px;border:1px solid var(--line);background:#0a2440;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--txt)}.btn:hover{background:#0f3458}
+.btn{white-space:nowrap;height:36px;padding:0 14px;border-radius:9px;border:1px solid var(--line);background:#0a2440;font-size:13px;font-weight:600;display:inline-flex;align-items:center;gap:6px;text-decoration:none;color:var(--txt)}.btn:hover{background:#0f3458}
 .btn.pri{background:var(--blue);border-color:#2abcfb}.btn.pri:hover{background:#0d7fc4}.btn.perigo{border-color:#7a3a33;color:#ffb3a7;background:#2a1110}.btn.sm{height:28px;padding:0 9px;font-size:12px}
-.wrap{max-width:1180px;margin:0 auto;padding:22px 22px 60px}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 22px 60px}
+.abas{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px}.aba{height:38px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:#041528;color:#a9cbe0;font-weight:650;font-size:13px}.aba.on{background:#0b4467;border-color:var(--cyan);color:#fff}
 .card{background:linear-gradient(160deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:18px}
-.card h2{font-size:15px;margin:0 0 4px}.card .desc{color:var(--muted);font-size:12.5px;margin:0 0 14px}
+.card h2{font-size:15px;margin:0 0 4px}.card .desc{color:var(--muted);font-size:12.5px;margin:0 0 14px;line-height:1.55}
 .form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.f{display:flex;flex-direction:column;gap:5px;font-size:11.5px;color:var(--muted);font-weight:600}.f.full{grid-column:1/-1}
 .field{height:36px;background:#03152a;border:1px solid var(--line);border-radius:8px;padding:0 10px;color:var(--txt);font-size:13px;font-weight:400}textarea.field{height:auto;min-height:64px;padding:8px 10px;resize:vertical}.field:focus{outline:0;border-color:var(--cyan);box-shadow:0 0 0 3px #37d9ff22}
 .chk{display:flex;gap:8px;align-items:center;font-size:13px;color:var(--txt);font-weight:500}
 table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px;border-bottom:1px solid var(--line)}td{padding:8px;border-bottom:1px solid #12354f;vertical-align:middle}
 tr.sel td{background:#0b2d4b}
 .ico{width:34px;height:34px;display:grid;place-items:center;border:1px solid #25b9ff62;border-radius:9px;background:#062c4ec9;color:#46dfff}.ico svg,.ip svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.chip{display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;padding:3px 9px;border-radius:20px}.chip.visivel{background:#0f3d2e;color:var(--ok)}.chip.bloqueado{background:#2f2a14;color:#e3c35a}.chip.oculto{background:#2a2f36;color:#a3b0bb}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;margin:1px 2px 1px 0}.chip.apresentacao{background:#13284f;color:#8fb8ff}.chip.visitante{background:#0f3a3d;color:#6fe6dc}.chip.cliente{background:#2b2147;color:#c5a8ff}.chip.admin{background:#3b2a0d;color:#ffc861}.chip.off{background:#2a2f36;color:#a3b0bb}
 .mut{color:var(--muted);font-size:12px}.url{font-family:ui-monospace,Consolas,monospace;font-size:11.5px;color:#9ccbe6;word-break:break-all}
 .ordem{display:flex;gap:3px}.ordem button{width:26px;height:26px;border-radius:6px;border:1px solid var(--line);background:#03152a;font-size:12px}
 .icones{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px}.ip{height:44px;border-radius:9px;border:1px solid var(--line);background:#03152a;color:#7fc4e4;display:grid;place-items:center}.ip.on{border-color:var(--cyan);color:#e4ffff;background:#076fa5}
 .prev{display:flex;align-items:center;gap:12px;padding:13px;border:1px solid rgba(60,177,255,.68);border-radius:13px;background:linear-gradient(135deg,rgba(8,48,84,.86),rgba(2,19,41,.92) 68%);max-width:250px}.prev.bloq{border-color:rgba(120,150,175,.45);background:linear-gradient(135deg,rgba(14,30,48,.9),rgba(4,14,28,.94));color:#b9cad6}.prev b{display:block;font-size:14px}.prev span{font-size:11px;color:#a5cee3}
 .split{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}@media(max-width:900px){.split,.form{grid-template-columns:1fr}}
-.login{max-width:380px;margin:9vh auto;text-align:left}.login .vmark{font-size:54px;letter-spacing:-9px}
-.msg{padding:10px 12px;border-radius:9px;font-size:13px;margin-top:10px}.msg.err{background:#3a1512;color:#ffb3a7;border:1px solid #7a3a33}.msg.ok{background:#0f3d2e;color:#9ff0cd;border:1px solid #1d6b52}
+.login{max-width:400px;margin:9vh auto;text-align:left}.login .vmark{font-size:54px;letter-spacing:-9px}
+.msg{padding:10px 12px;border-radius:9px;font-size:13px;margin-top:10px}.msg.err{background:#3a1512;color:#ffb3a7;border:1px solid #7a3a33}.msg.ok{background:#0f3d2e;color:#9ff0cd;border:1px solid #1d6b52}.msg.info{background:#0b2d4b;color:#bfe3f7;border:1px solid #1d6fa0}
 .toast{position:fixed;right:20px;bottom:20px;background:#0a6ba6;border:1px solid #2abcfb;padding:11px 16px;border-radius:10px;font-size:13px;opacity:0;transform:translateY(10px);transition:.25s;pointer-events:none;z-index:50}.toast.show{opacity:1;transform:none}.toast.err{background:#5a1f19;border-color:#c0574a}
-.hint{font-size:11.5px;color:var(--muted);font-weight:400}
+.hint{font-size:11.5px;color:var(--muted);font-weight:400;line-height:1.5}
+.filtro{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}.filtro button{height:30px;padding:0 12px;border-radius:16px;border:1px solid var(--line);background:#03152a;font-size:12px;color:#a9cbe0}.filtro button.on{border-color:var(--cyan);color:#fff;background:#0b4467}
+.globo{position:relative;width:260px;aspect-ratio:1;margin:0 auto}.globo img{width:100%;height:100%;clip-path:circle(47% at 50% 50%);filter:drop-shadow(0 0 18px #00a7ffae)}
+.globo .pin{position:absolute;width:0;height:0}.globo .pin svg{position:absolute;left:-11px;top:-31px;width:22px;height:31px;filter:drop-shadow(0 0 6px #ff4f6acc)}
+.modos-chk{display:flex;gap:14px;flex-wrap:wrap;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:#03152a}
 </style>
 </head>
 <body>
@@ -42,20 +47,34 @@ tr.sel td{background:#0b2d4b}
 <script src="icones.js"></script>
 <script>
 (()=>{'use strict';
-/* Administração do IOT CITY: só configura os botões e a aparência do portal.
-   Acesso: superadministrador (login do FCAH; mesma sessão se já estiver logado no mesmo domínio).
-   Segurança real: RLS no banco (função portal_admin). */
+/* Administração do IOT CITY (projeto próprio da VYONX): botões, cidade, apresentação, usuários do portal e aparência.
+   Segurança real no banco (RLS + portal_admin) e na função portal-usuarios (cria/remove logins). */
 const SB=window.supabase.createClient(IOT_SUPA.url,IOT_SUPA.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
 const R=document.getElementById('raiz');
 const esc=s=>(s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const EXIB={visivel:'Visível',bloqueado:'Bloqueado (cadeado)',oculto:'Oculto'};
-let APPS=[],CFG=null,EDIT=null,USER=null;
-function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(t._h);t._h=setTimeout(()=>t.className='toast',2600);}
+const MODOS={apresentacao:'Apresentação',visitante:'Visitante',cliente:'Cliente'};
+let APPS=[],CFG=null,USUARIOS=[],EDIT=null,USER=null,ABA='botoes',FILTRO='';
+try{ ABA=sessionStorage.getItem('iotcity-adm-aba')||ABA; }catch(_){}
+function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(t._h);t._h=setTimeout(()=>t.className='toast',2800);}
 const urlOk=u=>!u||/^https?:\/\/[a-z0-9.-]+(:\d{1,5})?([/?#].*)?$/i.test(u)||/^\/(?!\/)/.test(u);
 /* completa o protocolo: localhost:5180 → http://localhost:5180 · exemplo.com.br → https://exemplo.com.br */
 const normUrl=u=>{ u=(u||'').trim(); if(!u||/^[a-z][a-z0-9+.-]*:\/\//i.test(u)||u.startsWith('/')) return u;
   if(/^[a-z][a-z0-9+.-]*:(?!\d)/i.test(u)) return u; /* javascript:, mailto: etc. — ficam como estão (e são recusados) */
   return (/^(localhost|127\.\d+\.\d+\.\d+|\d+\.\d+\.\d+\.\d+)(:\d+)?([/?#]|$)/i.test(u)?'http://':'https://')+u; };
+/* mesma projeção do portal (terra.webp calibrada) — prévia do alfinete */
+const TERRA={la0:14,lo0:-67.45,R:365.29,cx:462.24,cy:406.37,rot:-0.18,disco:[400,400,355],lado:800};
+function pinPos(lat,lon){ const r=Math.PI/180,f=lat*r,l=(lon-TERRA.lo0)*r,f0=TERRA.la0*r;
+  if(Math.sin(f0)*Math.sin(f)+Math.cos(f0)*Math.cos(f)*Math.cos(l)<0.2) return null;
+  const x=TERRA.R*Math.cos(f)*Math.sin(l), y=TERRA.R*(Math.cos(f0)*Math.sin(f)-Math.sin(f0)*Math.cos(f)*Math.cos(l));
+  const c=Math.cos(TERRA.rot*r),s=Math.sin(TERRA.rot*r), X=TERRA.cx+x*c-y*s, Y=TERRA.cy-(x*s+y*c);
+  if(Math.hypot(X-TERRA.disco[0],Y-TERRA.disco[1])>TERRA.disco[2]) return null;
+  return {x:X/TERRA.lado*100,y:Y/TERRA.lado*100}; }
+const PIN='<svg viewBox="0 0 28 40"><path d="M14 0C6.3 0 0 6.1 0 13.7 0 24 14 40 14 40s14-16 14-26.3C28 6.1 21.7 0 14 0Z" fill="#ff4f6a" stroke="#ffd0d7" stroke-width="1.2"/><circle cx="14" cy="13.5" r="5.2" fill="#fff"/></svg>';
+async function funcao(body){ // chama a função de servidor e devolve a mensagem de erro em português
+  const {data,error}=await SB.functions.invoke('portal-usuarios',{body});
+  if(error){ let m=error.message; try{ const j=await error.context.json(); if(j&&j.erro) m=j.erro; }catch(_){} throw new Error(m); }
+  if(data&&data.erro) throw new Error(data.erro); return data; }
 
 async function inicio(){
   const {data}=await SB.auth.getSession();
@@ -65,9 +84,11 @@ async function inicio(){
   if(error||!adm) return telaSemAcesso();
   await carregar(); render();
 }
-function telaLogin(msg){
+async function telaLogin(msg){
+  const {data:primeiro}=await SB.rpc('portal_precisa_admin');
+  if(primeiro) return telaPrimeiro(msg);
   R.innerHTML=`<div class="wrap"><div class="card login"><div class="vmark">V</div><h2 style="margin:6px 0 2px">Administração do IOT CITY</h2>
-   <p class="desc">Configuração dos botões do portal. Use o login de superadministrador do sistema Financeiro (FCAH).</p>
+   <p class="desc">Botões, cidade, apresentação e usuários do portal. Entre com o seu login de administrador do portal.</p>
    <form id="fl" class="form" style="grid-template-columns:1fr"><label class="f">E-mail<input class="field" id="le" type="email" autocomplete="username" required></label>
    <label class="f">Senha<input class="field" id="ls" type="password" autocomplete="current-password" required></label>
    <button class="btn pri" type="submit" style="justify-content:center">Entrar</button></form>
@@ -77,75 +98,91 @@ function telaLogin(msg){
     if(error) return telaLogin(/Invalid login/i.test(error.message)?'E-mail ou senha inválidos.':error.message);
     inicio(); };
 }
+function telaPrimeiro(msg){
+  R.innerHTML=`<div class="wrap"><div class="card login"><div class="vmark">V</div><h2 style="margin:6px 0 2px">Primeiro acesso</h2>
+   <p class="desc">O portal ainda não tem administrador. Crie agora a senha do administrador (somente o e-mail autorizado pela VYONX).</p>
+   <form id="fp" class="form" style="grid-template-columns:1fr"><label class="f">E-mail do administrador<input class="field" id="pe" type="email" autocomplete="username" required></label>
+   <label class="f">Nova senha (mínimo 8 caracteres)<input class="field" id="ps" type="password" autocomplete="new-password" minlength="8" required></label>
+   <label class="f">Repita a senha<input class="field" id="ps2" type="password" autocomplete="new-password" minlength="8" required></label>
+   <button class="btn pri" type="submit" style="justify-content:center" id="pb">Criar administrador</button></form>
+   <div id="pm">${msg?`<div class="msg err">${esc(msg)}</div>`:''}</div><p class="mut" style="margin-top:14px"><a href="./">← Voltar ao portal</a></p></div></div>`;
+  const $=id=>document.getElementById(id);
+  $('fp').onsubmit=async e=>{ e.preventDefault(); const pm=$('pm');
+    if($('ps').value!==$('ps2').value){ pm.innerHTML='<div class="msg err">As senhas não conferem.</div>'; return; }
+    $('pb').disabled=true;
+    try{ await funcao({acao:'primeiro_admin',email:$('pe').value.trim(),senha:$('ps').value}); }
+    catch(err){ $('pb').disabled=false; pm.innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; return; }
+    const {error}=await SB.auth.signInWithPassword({email:$('pe').value.trim(),password:$('ps').value});
+    if(error) return telaLogin(error.message);
+    inicio(); };
+}
 function telaSemAcesso(){
-  R.innerHTML=`<div class="wrap"><div class="card login"><div class="vmark">V</div><h2>Sem permissão</h2><p class="desc">O usuário <b>${esc(USER&&USER.email)}</b> não é administrador do portal IOT CITY. Somente o superadministrador configura os botões.</p>
+  R.innerHTML=`<div class="wrap"><div class="card login"><div class="vmark">V</div><h2>Sem permissão</h2><p class="desc">O usuário <b>${esc(USER&&USER.email)}</b> não é administrador do portal IOT CITY.</p>
    <div style="display:flex;gap:8px"><a class="btn" href="./">← Portal</a><button class="btn" id="sair">Entrar com outro usuário</button></div></div></div>`;
   document.getElementById('sair').onclick=async()=>{await SB.auth.signOut();telaLogin();};
 }
 async function carregar(){
-  const [a,c]=await Promise.all([SB.from('portal_app').select('*').order('ordem').order('id'),SB.from('portal_config').select('*').eq('id',1).maybeSingle()]);
-  if(a.error) toast(a.error.message,true); APPS=a.data||[]; CFG=c.data||{};
+  const [a,c,u]=await Promise.all([SB.from('portal_app').select('*').order('ordem').order('id'),SB.from('portal_config').select('*').eq('id',1).maybeSingle(),
+    SB.from('portal_usuario').select('*').order('papel').order('email')]);
+  if(a.error) toast(a.error.message,true); APPS=a.data||[]; CFG=c.data||{}; USUARIOS=u.data||[];
 }
+async function salvarCfg(row,msg){
+  const {error}=await SB.from('portal_config').update({...row,atualizado_em:new Date().toISOString()}).eq('id',1);
+  if(error){ toast(error.message,true); return false; } await carregar(); toast(msg||'Salvo — atualize o portal para ver'); return true; }
+
 function render(){
-  R.innerHTML=`<header class="top"><div class="vmark">V</div><h1>IOT CITY · Administração<small>Botões e aparência do portal — o portal não controla acesso; cada sistema mantém o próprio login.</small></h1><div class="grow"></div>
+  const abas=[['botoes','Botões'],['cidade','Cidade'],['apresentacao','Apresentação e contato'],['usuarios','Usuários'],['aparencia','Aparência']];
+  R.innerHTML=`<header class="top"><div class="vmark">V</div><h1>IOT CITY · Administração<small>Cada sistema mantém o próprio login; o login do portal só mostra os botões de cliente.</small></h1><div class="grow"></div>
    <span class="mut">${esc(USER.email)}</span><a class="btn" href="./" target="_blank" rel="noopener">↗ Ver portal</a><button class="btn" id="sair">Sair</button></header>
-   <div class="wrap">
-   <div class="card"><div style="display:flex;align-items:center;gap:10px"><div><h2>Botões dos sistemas</h2><p class="desc">A órbita, o menu lateral e a grade usam esta mesma lista, nesta ordem.
-     <b>Visível</b>: aparece e abre o endereço · <b>Bloqueado</b>: aparece com cadeado e não abre (mostra a mensagem) · <b>Oculto</b>: não aparece.</p></div><div class="grow"></div><button class="btn pri" id="novo">+ Novo botão</button></div>
-   <table><thead><tr><th>Ordem</th><th></th><th>Sistema</th><th>Endereço</th><th>Exibição</th><th></th></tr></thead><tbody>
-   ${APPS.map((a,i)=>`<tr class="${EDIT&&EDIT.id===a.id?'sel':''}"><td><div class="ordem"><button title="Subir" data-up="${i}" ${i?'':'disabled'}>▲</button><button title="Descer" data-dn="${i}" ${i<APPS.length-1?'':'disabled'}>▼</button></div></td>
+   <div class="wrap"><nav class="abas">${abas.map(([k,l])=>`<button class="aba ${ABA===k?'on':''}" data-aba="${k}">${l}</button>`).join('')}</nav><div id="corpo"></div></div>`;
+  R.querySelector('#sair').onclick=async()=>{await SB.auth.signOut();telaLogin();};
+  R.querySelectorAll('[data-aba]').forEach(b=>b.onclick=()=>{ABA=b.dataset.aba;EDIT=null;try{sessionStorage.setItem('iotcity-adm-aba',ABA)}catch(_){}render();});
+  ({botoes:abaBotoes,cidade:abaCidade,apresentacao:abaApresentacao,usuarios:abaUsuarios,aparencia:abaAparencia}[ABA]||abaBotoes)(R.querySelector('#corpo'));
+}
+
+/* ---------- botões ---------- */
+function abaBotoes(box){
+  const lista=FILTRO?APPS.filter(a=>(a.modos||[]).includes(FILTRO)):APPS;
+  box.innerHTML=`<div class="card"><div style="display:flex;align-items:center;gap:10px"><div><h2>Botões</h2><p class="desc">Cada botão aparece em um ou mais modos do portal:
+     <span class="chip apresentacao">Apresentação</span> divulgação para todos (sem endereço, o clique mostra o "saiba mais" e o botão de contratar) ·
+     <span class="chip visitante">Visitante</span> serviços abertos ao público da cidade ·
+     <span class="chip cliente">Cliente</span> só depois do login do portal.<br>
+     <b>Visível</b>: abre o endereço · <b>Bloqueado</b>: aparece com cadeado e mostra a mensagem · <b>Oculto</b>: não aparece.</p></div><div class="grow"></div><button class="btn pri" id="novo">+ Novo botão</button></div>
+   <div class="filtro"><button data-f="" class="${FILTRO?'':'on'}">Todos (${APPS.length})</button>${Object.entries(MODOS).map(([k,l])=>`<button data-f="${k}" class="${FILTRO===k?'on':''}">${l} (${APPS.filter(a=>(a.modos||[]).includes(k)).length})</button>`).join('')}</div>
+   <table><thead><tr><th>Ordem</th><th></th><th>Botão</th><th>Onde aparece</th><th>Endereço</th><th>Exibição</th><th></th></tr></thead><tbody>
+   ${lista.map(a=>{const i=APPS.indexOf(a);return `<tr class="${EDIT&&EDIT.id===a.id?'sel':''}"><td><div class="ordem"><button title="Subir" data-up="${i}" ${i?'':'disabled'}>▲</button><button title="Descer" data-dn="${i}" ${i<APPS.length-1?'':'disabled'}>▼</button></div></td>
      <td><div class="ico">${iotIcone(a.icone)}</div></td><td><b>${esc(a.nome)}</b><div class="mut">${esc(a.descricao||'')}${a.categoria?' · '+esc(a.categoria):''}</div></td>
-     <td>${a.url?`<span class="url">${esc(a.url)}</span><div class="mut">${a.abrir_em==='mesma'?'mesma aba':'nova aba'}</div>`:'<span class="mut">— sem endereço —</span>'}</td>
+     <td>${(a.modos||[]).map(m=>`<span class="chip ${m}">${MODOS[m]||m}</span>`).join('')}</td>
+     <td>${a.url?`<span class="url">${esc(a.url)}</span><div class="mut">${a.abrir_em==='mesma'?'mesma aba':'nova aba'}</div>`:`<span class="mut">${a.saiba_mais?'— saiba mais —':'— sem endereço —'}</span>`}</td>
      <td><select class="field" data-exib="${a.id}" style="height:30px">${Object.entries(EXIB).map(([k,l])=>`<option value="${k}" ${a.exibicao===k?'selected':''}>${l}</option>`).join('')}</select></td>
-     <td style="white-space:nowrap"><button class="btn sm" data-ed="${a.id}">Editar</button> <button class="btn sm perigo" data-del="${a.id}">Excluir</button></td></tr>`).join('')||'<tr><td colspan="6" class="mut">Nenhum botão.</td></tr>'}
-   </tbody></table></div>
-   <div id="editor"></div>
-   <div class="card"><h2>Aparência do portal</h2><p class="desc">Textos, menu lateral e animação.</p>
-   <form id="fc" class="form">
-    <label class="f">Título<input class="field" name="titulo" value="${esc(CFG.titulo)}" maxlength="40"></label>
-    <label class="f">Subtítulo da marca (abaixo de VYONX)<input class="field" name="marca_sub" value="${esc(CFG.marca_sub)}" maxlength="40"></label>
-    <label class="f">Linha de destaque<input class="field" name="eyebrow" value="${esc(CFG.eyebrow)}" maxlength="60"></label>
-    <label class="f">Rodapé<input class="field" name="rodape" value="${esc(CFG.rodape)}" maxlength="90"></label>
-    <label class="f full">Legenda<textarea class="field" name="legenda" maxlength="200">${esc(CFG.legenda)}</textarea></label>
-    <label class="f">Menu lateral (estado inicial — o visitante pode mudar)<select class="field" name="menu_lateral">${[['oculto','Oculto (valoriza o 3D)'],['recolhido','Recolhido (só ícones)'],['expandido','Expandido (ícone e nome)']].map(([k,l])=>`<option value="${k}" ${CFG.menu_lateral===k?'selected':''}>${l}</option>`).join('')}</select></label>
-    <label class="f">Velocidade da rotação: <b id="vv">${Number(CFG.velocidade).toFixed(1)}×</b><input type="range" name="velocidade" min="0.2" max="4" step="0.1" value="${CFG.velocidade}"></label>
-    <label class="f">Ampliação no mouse over: <b id="va">${Math.round((CFG.ampliacao-1)*100)}%</b><input type="range" name="ampliacao" min="1" max="1.8" step="0.05" value="${CFG.ampliacao}"></label>
-    <div class="f" style="justify-content:flex-end;gap:8px"><label class="chk"><input type="checkbox" name="rotacao_auto" ${CFG.rotacao_auto?'checked':''}> Rotação automática</label>
-     <label class="chk"><input type="checkbox" name="mostrar_kpis" ${CFG.mostrar_kpis?'checked':''}> Mostrar indicadores no topo</label></div>
-    ${[0,1].map(i=>{const k=(CFG.kpis||[])[i]||{};return `<label class="f">Indicador ${i+2} — valor / rótulo<span style="display:flex;gap:6px"><input class="field" name="kv${i}" value="${esc(k.v)}" style="width:40%" maxlength="14"><input class="field" name="kl${i}" value="${esc(k.l)}" style="flex:1" maxlength="30"></span></label>`}).join('')}
-    <div class="full hint">O 1º indicador é automático: quantidade de sistemas visíveis.</div>
-    <div class="full" style="display:flex;justify-content:flex-end"><button class="btn pri" type="submit">Salvar aparência</button></div>
-   </form></div></div>`;
-  const $=s=>R.querySelector(s);
-  $('#sair').onclick=async()=>{await SB.auth.signOut();telaLogin();};
-  $('#novo').onclick=()=>{EDIT={nome:'',descricao:'',icone:'grade',url:'',abrir_em:'nova',exibicao:'visivel',mensagem_bloqueio:'',categoria:'',ordem:(APPS.length?Math.max(...APPS.map(a=>a.ordem||0)):0)+10};render();editor();};
-  R.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{EDIT={...APPS.find(a=>a.id==b.dataset.ed)};render();editor();});
-  R.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{const a=APPS.find(x=>x.id==b.dataset.del);if(!confirm('Excluir o botão "'+a.nome+'" do portal?'))return;
+     <td style="white-space:nowrap"><button class="btn sm" data-ed="${a.id}">Editar</button> <button class="btn sm perigo" data-del="${a.id}">Excluir</button></td></tr>`}).join('')||'<tr><td colspan="7" class="mut">Nenhum botão.</td></tr>'}
+   </tbody></table></div><div id="editor"></div>`;
+  const $=s=>box.querySelector(s);
+  box.querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{FILTRO=b.dataset.f;render();});
+  $('#novo').onclick=()=>{EDIT={nome:'',descricao:'',icone:'grade',url:'',abrir_em:'nova',exibicao:'visivel',mensagem_bloqueio:'',saiba_mais:'',categoria:'',modos:[FILTRO||'cliente'],ordem:(APPS.length?Math.max(...APPS.map(a=>a.ordem||0)):0)+10};render();};
+  box.querySelectorAll('[data-ed]').forEach(b=>b.onclick=()=>{EDIT={...APPS.find(a=>a.id==b.dataset.ed)};render();});
+  box.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{const a=APPS.find(x=>x.id==b.dataset.del);if(!confirm('Excluir o botão "'+a.nome+'" do portal?'))return;
     const {error}=await SB.from('portal_app').delete().eq('id',a.id);if(error)return toast(error.message,true);await carregar();EDIT=null;render();toast('Botão excluído');});
-  R.querySelectorAll('[data-exib]').forEach(s=>s.onchange=async()=>{const {error}=await SB.from('portal_app').update({exibicao:s.value,atualizado_em:new Date().toISOString()}).eq('id',s.dataset.exib);
+  box.querySelectorAll('[data-exib]').forEach(s=>s.onchange=async()=>{const {error}=await SB.from('portal_app').update({exibicao:s.value,atualizado_em:new Date().toISOString()}).eq('id',s.dataset.exib);
     if(error)return toast(error.message,true);await carregar();render();toast('Exibição atualizada');});
   const troca=async(i,j)=>{const a=APPS[i],b=APPS[j];const oa=a.ordem,ob=b.ordem===oa?oa+1:b.ordem;
     const r1=await SB.from('portal_app').update({ordem:ob}).eq('id',a.id),r2=await SB.from('portal_app').update({ordem:oa}).eq('id',b.id);
     if(r1.error||r2.error)return toast((r1.error||r2.error).message,true);await carregar();render();};
-  R.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>troca(+b.dataset.up,+b.dataset.up-1));
-  R.querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>troca(+b.dataset.dn,+b.dataset.dn+1));
-  const fc=$('#fc'); fc.velocidade.oninput=()=>$('#vv').textContent=Number(fc.velocidade.value).toFixed(1)+'×'; fc.ampliacao.oninput=()=>$('#va').textContent=Math.round((fc.ampliacao.value-1)*100)+'%';
-  fc.onsubmit=async e=>{e.preventDefault();
-    const kpis=[0,1].map(i=>({v:fc['kv'+i].value.trim(),l:fc['kl'+i].value.trim()})).filter(k=>k.v||k.l);
-    const row={titulo:fc.titulo.value.trim()||'IOT CITY',marca_sub:fc.marca_sub.value.trim(),eyebrow:fc.eyebrow.value.trim(),legenda:fc.legenda.value.trim(),rodape:fc.rodape.value.trim(),
-      menu_lateral:fc.menu_lateral.value,velocidade:+fc.velocidade.value,ampliacao:+fc.ampliacao.value,rotacao_auto:fc.rotacao_auto.checked,mostrar_kpis:fc.mostrar_kpis.checked,kpis,atualizado_em:new Date().toISOString()};
-    const {error}=await SB.from('portal_config').update(row).eq('id',1);if(error)return toast(error.message,true);await carregar();toast('Aparência salva — atualize o portal para ver');};
+  box.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>troca(+b.dataset.up,+b.dataset.up-1));
+  box.querySelectorAll('[data-dn]').forEach(b=>b.onclick=()=>troca(+b.dataset.dn,+b.dataset.dn+1));
   if(EDIT) editor();
 }
 function editor(){
   const box=R.querySelector('#editor'); if(!box||!EDIT) return; const e=EDIT;
-  box.innerHTML=`<div class="card"><h2>${e.id?'Editar botão':'Novo botão'}</h2><p class="desc">Endereço com <b>https://</b> ou <b>http://</b> (aceita porta, ex.: <b>http://localhost:5180</b>) ou caminho deste site (/erp/). Se digitar sem o protocolo, ele é completado. Atenção: <b>localhost</b> só abre no computador onde o sistema está rodando. O login continua sendo o do próprio sistema.</p>
+  box.innerHTML=`<div class="card"><h2>${e.id?'Editar botão':'Novo botão'}</h2><p class="desc">Endereço com <b>https://</b> ou <b>http://</b> (aceita porta, ex.: <b>http://localhost:5180</b>) ou caminho do site (/erp/). Sem protocolo, ele é completado. <b>localhost</b> só abre no computador onde o sistema roda. Na <b>Apresentação</b> o botão pode ficar sem endereço: o clique mostra o texto "saiba mais" e o botão de contratar.</p>
    <div class="split"><form id="fe" class="form">
     <label class="f">Nome *<input class="field" name="nome" value="${esc(e.nome)}" maxlength="40" required></label>
     <label class="f">Descrição<input class="field" name="descricao" value="${esc(e.descricao)}" maxlength="60"></label>
+    <div class="f full">Onde aparece *<div class="modos-chk">${Object.entries(MODOS).map(([k,l])=>`<label class="chk"><input type="checkbox" name="m_${k}" ${(e.modos||[]).includes(k)?'checked':''}> <span class="chip ${k}">${l}</span></label>`).join('')}</div></div>
     <label class="f full">Endereço (URL)<input class="field" name="url" value="${esc(e.url)}" placeholder="https://sistema.com.br  ·  http://localhost:5180"></label>
     <label class="f">Abrir em<select class="field" name="abrir_em"><option value="nova" ${e.abrir_em!=='mesma'?'selected':''}>Nova aba</option><option value="mesma" ${e.abrir_em==='mesma'?'selected':''}>Mesma aba</option></select></label>
     <label class="f">Exibição<select class="field" name="exibicao">${Object.entries(EXIB).map(([k,l])=>`<option value="${k}" ${e.exibicao===k?'selected':''}>${l}</option>`).join('')}</select></label>
+    <label class="f full">Saiba mais (texto da janela quando não há endereço)<textarea class="field" name="saiba_mais" maxlength="500">${esc(e.saiba_mais)}</textarea></label>
     <label class="f full">Mensagem quando bloqueado<input class="field" name="mensagem_bloqueio" value="${esc(e.mensagem_bloqueio)}" maxlength="160" placeholder="Ex.: Em implantação — disponível em breve."></label>
     <label class="f">Categoria<input class="field" name="categoria" value="${esc(e.categoria)}" maxlength="30" placeholder="Ex.: Cidades"></label>
     <label class="f">Ordem<input class="field" name="ordem" type="number" value="${esc(e.ordem)}"></label>
@@ -155,20 +192,131 @@ function editor(){
     <div><div class="f" style="margin-bottom:8px">Prévia</div><div id="prev"></div><p class="hint" style="margin-top:12px">No portal o cartão gira em volta da Terra; no menu lateral e na grade aparece o mesmo botão.</p></div></div></div>`;
   const f=box.querySelector('#fe');
   const prev=()=>{const b=f.exibicao.value==='bloqueado';box.querySelector('#prev').innerHTML=f.exibicao.value==='oculto'?'<div class="mut">Oculto: não aparece no portal.</div>':
-    `<div class="prev ${b?'bloq':''}"><div class="ico">${iotIcone(e.icone)}</div><div><b>${esc(f.nome.value||'Nome do sistema')}</b><span>${esc(f.descricao.value)}</span></div><span style="margin-left:auto">${b?'🔒︎':'↗'}</span></div>`;};
+    `<div class="prev ${b?'bloq':''}"><div class="ico">${iotIcone(e.icone)}</div><div><b>${esc(f.nome.value||'Nome')}</b><span>${esc(f.descricao.value)}</span></div><span style="margin-left:auto">${b?'🔒︎':f.url.value.trim()?'↗':'+'}</span></div>`;};
   f.oninput=prev; f.onchange=prev; prev();
   box.querySelectorAll('[data-ic]').forEach(b=>b.onclick=()=>{e.icone=b.dataset.ic;box.querySelectorAll('.ip').forEach(x=>x.classList.toggle('on',x===b));prev();});
   box.querySelector('#cancel').onclick=()=>{EDIT=null;render();};
   f.onsubmit=async ev=>{ev.preventDefault(); const er=box.querySelector('#erro');
-    const row={nome:f.nome.value.trim(),descricao:f.descricao.value.trim()||null,url:normUrl(f.url.value)||null,abrir_em:f.abrir_em.value,exibicao:f.exibicao.value,
-      mensagem_bloqueio:f.mensagem_bloqueio.value.trim()||null,categoria:f.categoria.value.trim()||null,ordem:parseInt(f.ordem.value,10)||0,icone:e.icone,atualizado_em:new Date().toISOString()};
+    const modos=Object.keys(MODOS).filter(k=>f['m_'+k].checked);
+    const row={nome:f.nome.value.trim(),descricao:f.descricao.value.trim()||null,url:normUrl(f.url.value)||null,abrir_em:f.abrir_em.value,exibicao:f.exibicao.value,modos,
+      saiba_mais:f.saiba_mais.value.trim()||null,mensagem_bloqueio:f.mensagem_bloqueio.value.trim()||null,categoria:f.categoria.value.trim()||null,ordem:parseInt(f.ordem.value,10)||0,icone:e.icone,atualizado_em:new Date().toISOString()};
     if(!row.nome){er.innerHTML='<div class="msg err">Informe o nome.</div>';return;}
+    if(!modos.length){er.innerHTML='<div class="msg err">Marque pelo menos um lugar onde o botão aparece.</div>';return;}
     if(!urlOk(row.url)){er.innerHTML='<div class="msg err">Endereço inválido. Exemplos aceitos: https://sistema.com.br · http://localhost:5180 · /erp/</div>';return;}
-    if(row.exibicao==='visivel'&&!row.url){if(!confirm('Botão visível sem endereço: ao clicar, o portal avisa que o endereço não foi configurado. Salvar assim?'))return;}
+    if(row.exibicao==='visivel'&&!row.url&&!row.saiba_mais){if(!confirm('Botão visível sem endereço e sem "saiba mais": o clique só avisa que não há endereço. Salvar assim?'))return;}
     const r=e.id?await SB.from('portal_app').update(row).eq('id',e.id):await SB.from('portal_app').insert(row);
     if(r.error){er.innerHTML='<div class="msg err">'+esc(r.error.message)+'</div>';return;}
     EDIT=null;await carregar();render();toast('Botão salvo — já aparece no portal');};
   box.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ---------- cidade ---------- */
+function abaCidade(box){
+  const c=CFG, coord=(c.cidade_lat!=null&&c.cidade_lon!=null)?c.cidade_lat+', '+c.cidade_lon:'';
+  box.innerHTML=`<div class="card"><h2>Cidade (ou empresa) do portal</h2><p class="desc">O nome aparece ao lado de IOT CITY nos modos Visitante e Cliente, e o alfinete marca o local no globo.
+    Coordenadas: no Google Maps, clique com o botão direito no local e clique nos números (eles são copiados) — cole aqui.</p>
+   <div class="split"><form id="fc" class="form">
+    <label class="f full">Nome exibido<input class="field" name="cidade_nome" value="${esc(c.cidade_nome)}" maxlength="40" placeholder="SÃO PAULO - SP"></label>
+    <label class="f full">Coordenadas (latitude, longitude)<input class="field" name="coord" value="${esc(coord)}" placeholder="-23.5505, -46.6333"></label>
+    <label class="chk full"><input type="checkbox" name="mostrar_alfinete" ${c.mostrar_alfinete?'checked':''}> Mostrar o alfinete no globo</label>
+    <label class="f full">Texto do modo Visitante<textarea class="field" name="visitante_texto" maxlength="300">${esc(c.visitante_texto)}</textarea></label>
+    <div class="full hint">Os serviços abertos ao público são os botões marcados como <span class="chip visitante">Visitante</span> na aba Botões.</div>
+    <div class="full" style="display:flex;justify-content:flex-end"><button class="btn pri" type="submit">Salvar cidade</button></div><div id="ce" class="full"></div></form>
+    <div><div class="f" style="margin-bottom:8px;text-align:center">Prévia do alfinete</div><div class="globo"><img src="terra.webp" alt=""><div class="pin" id="gpin">${PIN}</div></div><p class="hint" id="gmsg" style="text-align:center"></p></div></div></div>`;
+  const f=box.querySelector('#fc');
+  const ler=()=>{ const m=f.coord.value.replace(/[°]/g,'').match(/^\s*(-?\d+(?:[.,]\d+)?)\s*[,; ]\s*(-?\d+(?:[.,]\d+)?)\s*$/); if(!m) return null;
+    const lat=parseFloat(m[1].replace(',','.')),lon=parseFloat(m[2].replace(',','.')); return Math.abs(lat)<=90&&Math.abs(lon)<=180?{lat,lon}:null; };
+  const prev=()=>{ const p=ler(), pin=box.querySelector('#gpin'), msg=box.querySelector('#gmsg'); const pos=p&&pinPos(p.lat,p.lon);
+    pin.style.display=pos?'':'none'; if(pos){pin.style.left=pos.x+'%';pin.style.top=pos.y+'%';}
+    msg.textContent=!f.coord.value.trim()?'Sem coordenadas: o alfinete não aparece.':!p?'Coordenadas inválidas. Exemplo: -23.5505, -46.6333':!pos?'Este local fica no lado do globo que não aparece na imagem — o alfinete não será mostrado.':''; };
+  f.oninput=prev; prev();
+  f.onsubmit=async e=>{ e.preventDefault(); const p=ler(); const er=box.querySelector('#ce');
+    if(f.coord.value.trim()&&!p){ er.innerHTML='<div class="msg err">Coordenadas inválidas. Exemplo: -23.5505, -46.6333</div>'; return; }
+    await salvarCfg({cidade_nome:f.cidade_nome.value.trim()||null,cidade_lat:p?p.lat:null,cidade_lon:p?p.lon:null,mostrar_alfinete:f.mostrar_alfinete.checked,visitante_texto:f.visitante_texto.value.trim()||null},'Cidade salva');
+    render(); };
+}
+
+/* ---------- apresentação e contato ---------- */
+function abaApresentacao(box){
+  const c=CFG;
+  box.innerHTML=`<div class="card"><h2>Apresentação (tela inicial, aberta a todos)</h2><p class="desc">Texto de divulgação à esquerda do globo. Os cartões em órbita são os botões marcados como <span class="chip apresentacao">Apresentação</span>.</p>
+   <form id="fa" class="form">
+    <label class="f full">Título<textarea class="field" name="mkt_titulo" maxlength="140" style="min-height:52px">${esc(c.mkt_titulo)}</textarea></label>
+    <label class="f">Frase de destaque<input class="field" name="mkt_destaque" value="${esc(c.mkt_destaque)}" maxlength="60"></label>
+    <label class="f">Palavras-chave (separe por vírgula)<input class="field" name="mkt_itens" value="${esc((c.mkt_itens||[]).join(', '))}" maxlength="160"></label>
+    <label class="f">Texto do botão<input class="field" name="mkt_cta" value="${esc(c.mkt_cta)}" maxlength="30"></label>
+    <label class="f">Nota ao lado do botão<input class="field" name="mkt_nota" value="${esc(c.mkt_nota)}" maxlength="60"></label>
+    <div class="full" style="border-top:1px solid var(--line);margin-top:4px;padding-top:12px"><h2 style="font-size:14px;margin:0 0 4px">Contato do "${esc(c.mkt_cta||'CONTRATE AGORA')}"</h2><p class="hint" style="margin:0">O botão abre uma janela com WhatsApp e/ou e-mail. Sem nenhum dos dois, a janela avisa que os canais estão sendo configurados.</p></div>
+    <label class="f">WhatsApp (só números, com DDI e DDD)<input class="field" name="contato_whatsapp" value="${esc(c.contato_whatsapp)}" maxlength="15" placeholder="5541999999999" inputmode="numeric"></label>
+    <label class="f">E-mail<input class="field" name="contato_email" value="${esc(c.contato_email)}" maxlength="120" placeholder="contato@vyonx.com.br" type="email"></label>
+    <label class="f full">Mensagem que já vem escrita<input class="field" name="contato_mensagem" value="${esc(c.contato_mensagem)}" maxlength="200"></label>
+    <div class="full" style="display:flex;justify-content:flex-end"><button class="btn pri" type="submit">Salvar apresentação</button></div><div id="ae" class="full"></div>
+   </form></div>`;
+  const f=box.querySelector('#fa');
+  f.onsubmit=async e=>{ e.preventDefault(); const er=box.querySelector('#ae'); const zap=f.contato_whatsapp.value.replace(/\D/g,'');
+    if(zap&&(zap.length<10||zap.length>15)){ er.innerHTML='<div class="msg err">WhatsApp: informe de 10 a 15 números, com DDI (55) e DDD.</div>'; return; }
+    const ok=await salvarCfg({mkt_titulo:f.mkt_titulo.value.trim()||null,mkt_destaque:f.mkt_destaque.value.trim()||null,mkt_itens:f.mkt_itens.value.split(',').map(s=>s.trim()).filter(Boolean).slice(0,8),
+      mkt_cta:f.mkt_cta.value.trim()||'CONTRATE AGORA',mkt_nota:f.mkt_nota.value.trim()||null,contato_whatsapp:zap||null,contato_email:f.contato_email.value.trim()||null,contato_mensagem:f.contato_mensagem.value.trim()||null},'Apresentação salva');
+    if(ok) render(); };
+}
+
+/* ---------- usuários do portal ---------- */
+function abaUsuarios(box){
+  box.innerHTML=`<div class="card"><h2>Usuários do portal</h2><p class="desc"><span class="chip cliente">Cliente</span> entra pelo botão CLIENTE e vê os botões de cliente ·
+    <span class="chip admin">Administrador</span> também configura o portal. Este login <b>não</b> dá acesso aos sistemas — cada sistema continua com o próprio login.</p>
+   <table><thead><tr><th>E-mail</th><th>Nome</th><th>Papel</th><th>Situação</th><th></th></tr></thead><tbody>
+   ${USUARIOS.map(u=>`<tr><td>${esc(u.email)}${u.user_id===USER.id?' <span class="mut">(você)</span>':''}</td><td>${esc(u.nome||'')}</td>
+     <td><select class="field" data-papel="${u.user_id}" style="height:30px"><option value="cliente" ${u.papel==='cliente'?'selected':''}>Cliente</option><option value="admin" ${u.papel==='admin'?'selected':''}>Administrador</option></select></td>
+     <td><select class="field" data-ativo="${u.user_id}" style="height:30px"><option value="1" ${u.ativo?'selected':''}>Ativo</option><option value="0" ${u.ativo?'':'selected'}>Bloqueado</option></select></td>
+     <td style="white-space:nowrap"><button class="btn sm" data-senha="${u.user_id}">Nova senha</button> ${u.user_id===USER.id?'':`<button class="btn sm perigo" data-exc="${u.user_id}">Excluir</button>`}</td></tr>`).join('')||'<tr><td colspan="5" class="mut">Nenhum usuário.</td></tr>'}
+   </tbody></table></div>
+   <div class="card"><h2>Novo usuário</h2><p class="desc">Informe uma senha inicial e passe para a pessoa; ela pode trocar depois em CLIENTE → Alterar senha.</p>
+   <form id="fu" class="form"><label class="f">E-mail *<input class="field" name="email" type="email" required maxlength="120"></label><label class="f">Nome<input class="field" name="nome" maxlength="80"></label>
+    <label class="f">Papel<select class="field" name="papel"><option value="cliente">Cliente</option><option value="admin">Administrador</option></select></label>
+    <label class="f">Senha inicial * (mínimo 8)<input class="field" name="senha" type="text" minlength="8" required autocomplete="off"></label>
+    <div class="full" style="display:flex;justify-content:flex-end"><button class="btn pri" type="submit" id="ub">Criar usuário</button></div><div id="ue" class="full"></div></form></div>`;
+  const att=async(id,row,msg)=>{ const {error}=await SB.from('portal_usuario').update(row).eq('user_id',id);
+    if(error){ toast(/administrador/.test(error.message)?'O portal precisa de pelo menos um administrador ativo.':error.message,true); } else toast(msg);
+    await carregar(); render(); };
+  box.querySelectorAll('[data-papel]').forEach(s=>s.onchange=()=>att(s.dataset.papel,{papel:s.value},'Papel atualizado'));
+  box.querySelectorAll('[data-ativo]').forEach(s=>s.onchange=()=>att(s.dataset.ativo,{ativo:s.value==='1'},s.value==='1'?'Usuário ativado':'Usuário bloqueado'));
+  box.querySelectorAll('[data-senha]').forEach(b=>b.onclick=async()=>{ const u=USUARIOS.find(x=>x.user_id===b.dataset.senha);
+    const s=prompt('Nova senha para '+u.email+' (mínimo 8 caracteres):'); if(s==null) return;
+    try{ await funcao({acao:'senha',user_id:u.user_id,senha:s}); toast('Senha alterada'); }catch(err){ toast(err.message,true); } });
+  box.querySelectorAll('[data-exc]').forEach(b=>b.onclick=async()=>{ const u=USUARIOS.find(x=>x.user_id===b.dataset.exc);
+    if(!confirm('Excluir o login de '+u.email+' do portal?')) return;
+    try{ await funcao({acao:'excluir',user_id:u.user_id}); toast('Usuário excluído'); }catch(err){ toast(err.message,true); } await carregar(); render(); });
+  const f=box.querySelector('#fu');
+  f.onsubmit=async e=>{ e.preventDefault(); const er=box.querySelector('#ue'); box.querySelector('#ub').disabled=true;
+    try{ await funcao({acao:'criar',email:f.email.value.trim(),nome:f.nome.value.trim(),papel:f.papel.value,senha:f.senha.value}); }
+    catch(err){ box.querySelector('#ub').disabled=false; er.innerHTML='<div class="msg err">'+esc(err.message)+'</div>'; return; }
+    await carregar(); render(); toast('Usuário criado'); };
+}
+
+/* ---------- aparência ---------- */
+function abaAparencia(box){
+  const c=CFG;
+  box.innerHTML=`<div class="card"><h2>Aparência do portal</h2><p class="desc">Textos gerais, área do cliente, menu lateral e animação.</p>
+   <form id="fc" class="form">
+    <label class="f">Título<input class="field" name="titulo" value="${esc(c.titulo)}" maxlength="40"></label>
+    <label class="f">Subtítulo da marca (abaixo de VYONX)<input class="field" name="marca_sub" value="${esc(c.marca_sub)}" maxlength="40"></label>
+    <label class="f">Linha de destaque (apresentação e cliente)<input class="field" name="eyebrow" value="${esc(c.eyebrow)}" maxlength="60"></label>
+    <label class="f">Rodapé<input class="field" name="rodape" value="${esc(c.rodape)}" maxlength="90"></label>
+    <label class="f full">Texto da área do cliente<textarea class="field" name="legenda" maxlength="200">${esc(c.legenda)}</textarea></label>
+    <label class="f">Menu lateral (estado inicial — quem acessa pode mudar)<select class="field" name="menu_lateral">${[['oculto','Oculto (valoriza o 3D)'],['recolhido','Recolhido (só ícones)'],['expandido','Expandido (ícone e nome)']].map(([k,l])=>`<option value="${k}" ${c.menu_lateral===k?'selected':''}>${l}</option>`).join('')}</select></label>
+    <label class="f">Velocidade da rotação: <b id="vv">${Number(c.velocidade).toFixed(1)}×</b><input type="range" name="velocidade" min="0.2" max="4" step="0.1" value="${c.velocidade}"></label>
+    <label class="f">Ampliação no mouse over: <b id="va">${Math.round((c.ampliacao-1)*100)}%</b><input type="range" name="ampliacao" min="1" max="1.8" step="0.05" value="${c.ampliacao}"></label>
+    <div class="f" style="justify-content:flex-end;gap:8px"><label class="chk"><input type="checkbox" name="rotacao_auto" ${c.rotacao_auto?'checked':''}> Rotação automática</label>
+     <label class="chk"><input type="checkbox" name="mostrar_kpis" ${c.mostrar_kpis?'checked':''}> Mostrar indicadores no topo (visitante e cliente)</label></div>
+    ${[0,1].map(i=>{const k=(c.kpis||[])[i]||{};return `<label class="f">Indicador ${i+2} — valor / rótulo<span style="display:flex;gap:6px"><input class="field" name="kv${i}" value="${esc(k.v)}" style="width:40%" maxlength="14"><input class="field" name="kl${i}" value="${esc(k.l)}" style="flex:1" maxlength="30"></span></label>`}).join('')}
+    <div class="full hint">O 1º indicador é automático: quantidade de botões visíveis no modo atual.</div>
+    <div class="full" style="display:flex;justify-content:flex-end"><button class="btn pri" type="submit">Salvar aparência</button></div>
+   </form></div>`;
+  const fc=box.querySelector('#fc'); fc.velocidade.oninput=()=>box.querySelector('#vv').textContent=Number(fc.velocidade.value).toFixed(1)+'×'; fc.ampliacao.oninput=()=>box.querySelector('#va').textContent=Math.round((fc.ampliacao.value-1)*100)+'%';
+  fc.onsubmit=async e=>{e.preventDefault();
+    const kpis=[0,1].map(i=>({v:fc['kv'+i].value.trim(),l:fc['kl'+i].value.trim()})).filter(k=>k.v||k.l);
+    await salvarCfg({titulo:fc.titulo.value.trim()||'IOT CITY',marca_sub:fc.marca_sub.value.trim(),eyebrow:fc.eyebrow.value.trim(),legenda:fc.legenda.value.trim(),rodape:fc.rodape.value.trim(),
+      menu_lateral:fc.menu_lateral.value,velocidade:+fc.velocidade.value,ampliacao:+fc.ampliacao.value,rotacao_auto:fc.rotacao_auto.checked,mostrar_kpis:fc.mostrar_kpis.checked,kpis},'Aparência salva — atualize o portal para ver');};
 }
 inicio();
 })();
