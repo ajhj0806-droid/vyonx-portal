@@ -1,0 +1,575 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>IOT CITY AUDIT | VYONX</title>
+<meta name="description" content="IOT CITY AUDIT — o Índice de Desempenho Geral dos sistemas monitorados, com a análise por trás de cada número.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23041626'/%3E%3Cpath d='M7 8l9 17 9-17' fill='none' stroke='%2337d9ff' stroke-width='4' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+:root{color-scheme:dark;--cyan:#37d9ff;--white:#edf6ff;--muted:#8ea9bd;
+  --verde:#2fe3a2;--amarelo:#ffd24a;--laranja:#ff9333;--vermelho:#ff4f6a;--cinza:#7f9db2;--neutro:#49c8ee;--idg:#37d9ff}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{font-family:Inter,"Segoe UI",Arial,sans-serif;background:#020816;color:var(--white);overflow:hidden}
+button,input,select{font:inherit}button{cursor:pointer}
+button:focus-visible,select:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #3be9fc;outline-offset:3px}
+.app{position:relative;width:100vw;height:100vh;overflow:hidden;
+  background:radial-gradient(ellipse 54% 60% at 30% 58%,#063766aa,transparent 74%),linear-gradient(125deg,#020913,#041626 70%,#020913)}
+.app::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:.1;
+  background:repeating-linear-gradient(0deg,transparent 0,transparent 69px,#3ca4ff41 70px),repeating-linear-gradient(90deg,transparent 0,transparent 69px,#3ca4ff41 70px);
+  mask-image:linear-gradient(0deg,#000 0,transparent 62%)}
+
+/* topo */
+.top{position:absolute;z-index:100;left:0;right:0;top:0;height:70px;display:flex;align-items:center;gap:14px;padding:0 20px 0 14px;
+  background:linear-gradient(180deg,#020a1cf7,#041226e5);border-bottom:1px solid #1e628a66;box-shadow:0 15px 35px #0008}
+.volta{display:inline-flex;align-items:center;gap:8px;height:36px;padding:0 13px;border:1px solid #1d6fa055;border-radius:9px;
+  background:#061a2fa8;color:#a7cde9;text-decoration:none;font-size:12.5px;white-space:nowrap}
+.volta:hover{background:#113657;color:#e6f8ff}
+.brand{display:flex;align-items:baseline;gap:11px;min-width:0;white-space:nowrap}
+.brand h1{margin:0;font-size:clamp(19px,1.9vw,27px);line-height:1;font-weight:880;letter-spacing:-.5px}
+.brand h1 span{background:linear-gradient(115deg,#2da0ff,#33e6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+.brand em{font-style:normal;font-size:clamp(11px,1vw,14px);font-weight:800;letter-spacing:3.4px;color:#7fd8f5;
+  padding-left:11px;border-left:1px solid #2b84bd66}
+.top-right{display:flex;align-items:center;gap:9px;margin-left:auto;min-width:0}
+.escolha{display:flex;align-items:center;gap:8px;min-width:0}
+.escolha label{font-size:9.5px;letter-spacing:2.2px;color:#6fa5c6;font-weight:700;white-space:nowrap}
+.escolha select{height:36px;max-width:min(300px,34vw);border:1px solid #1d8bd38c;border-radius:9px;background:#020e1cd9;color:#e6f8ff;
+  padding:0 10px;font-size:12.5px;text-overflow:ellipsis}
+.acao{height:36px;padding:0 13px;border:1px solid #1d6fa055;border-radius:9px;background:#061a2fa8;color:#a7cde9;font-size:12px;
+  display:inline-flex;align-items:center;gap:7px}
+.acao:hover{background:#113657;color:#e6f8ff}.acao:disabled{opacity:.55;cursor:wait}
+.acao svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.quem{font-size:11px;color:#86a9c0;max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+/* palco: índice à esquerda, cartões à direita */
+.main{position:absolute;z-index:2;inset:70px 0 0;display:grid;grid-template-columns:minmax(320px,31%) 1fr;gap:4px;overflow:hidden}
+.lado{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:14px 18px 92px;min-width:0}
+.globo{position:relative;width:min(300px,62%);aspect-ratio:1;flex:0 0 auto}
+.globo .anel{position:absolute;inset:-7%;border-radius:50%;border:2px solid var(--idg);opacity:.5;
+  box-shadow:0 0 22px var(--idg),inset 0 0 34px color-mix(in srgb,var(--idg) 34%,transparent);transition:border-color .5s,box-shadow .5s}
+.globo .anel.b{inset:-16%;border-width:1px;opacity:.22;animation:gira 34s linear infinite;border-style:dashed}
+@keyframes gira{to{transform:rotate(360deg)}}
+.world{position:absolute;inset:0;pointer-events:none;filter:drop-shadow(0 0 20px #00a7ff9e)}
+.world img{width:100%;height:100%;object-fit:cover;clip-path:circle(47% at 50% 50%)}
+.globo3d-canvas{position:absolute;left:-30%;top:-30%;width:160%;height:160%;opacity:0;transition:opacity 1.2s ease;pointer-events:none}
+.world.globo3d{filter:none}.world.globo3d .globo3d-canvas{opacity:1}.world.globo3d img{opacity:0;transition:opacity 1.2s ease}
+.idg-num{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);text-align:center;pointer-events:none;
+  text-shadow:0 2px 26px #000,0 0 40px #000c}
+.idg-num b{display:block;font-size:clamp(44px,5.4vw,76px);font-weight:900;letter-spacing:-3px;line-height:.95;color:var(--idg)}
+.idg-num small{display:block;margin-top:5px;font-size:11px;font-weight:800;letter-spacing:3.4px;text-transform:uppercase;color:#d5effc}
+.idg-rot{font-size:9.5px;letter-spacing:3px;color:#6fa5c6;font-weight:700}
+.idg-tit{margin:5px 0 16px;font-size:clamp(15px,1.4vw,20px);font-weight:800;text-align:center}
+.idg-meta{margin-top:14px;display:grid;gap:7px;justify-items:center;font-size:11.5px;color:#9fc6e0;text-align:center;max-width:300px;line-height:1.5}
+.idg-meta .forte{color:#d7ecf8}
+
+/* cartões */
+.painel{position:relative;min-width:0;overflow:auto;padding:16px 20px 92px;scrollbar-width:thin}
+.painel h2{margin:0 0 3px;font-size:13px;font-weight:800;letter-spacing:.3px}
+.painel .sub{margin:0 0 14px;font-size:11.5px;color:#93b8d0}
+.grupo{margin-bottom:8px;font-size:9.5px;letter-spacing:2.4px;color:#6fa5c6;font-weight:700}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(212px,1fr));gap:12px;margin-bottom:20px}
+.cartao{position:relative;display:flex;flex-direction:column;gap:9px;padding:13px 14px 15px;border:0;border-radius:13px;text-align:left;color:#edfaff;overflow:hidden;
+  background:linear-gradient(160deg,rgba(9,44,84,.8),rgba(3,15,34,.92) 58%,rgba(2,9,22,.95));
+  box-shadow:0 14px 26px #0009,inset 0 0 0 1px rgba(80,190,255,.2),inset 0 1px 0 rgba(170,235,255,.16)}
+.cartao:hover{box-shadow:0 18px 34px #000b,inset 0 0 0 1px color-mix(in srgb,var(--c) 62%,transparent),0 0 22px color-mix(in srgb,var(--c) 34%,transparent);filter:brightness(1.07)}
+.cartao:before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--c);box-shadow:0 0 14px var(--c)}
+.c-top{display:flex;align-items:center;gap:9px;min-width:0}
+.c-ico{flex:0 0 auto;width:30px;height:30px;display:grid;place-items:center;border-radius:9px;color:var(--c);
+  background:radial-gradient(circle at 50% 30%,#0b4f7f,#05233c 78%);box-shadow:0 0 0 1px color-mix(in srgb,var(--c) 45%,transparent)}
+.c-ico svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.c-nome{font-size:11.5px;font-weight:720;line-height:1.25;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.c-valor{display:flex;align-items:baseline;gap:4px;min-width:0}
+.c-valor b{font-size:clamp(25px,2.5vw,34px);font-weight:880;letter-spacing:-1.4px;line-height:1;color:var(--c)}
+.c-valor i{font-style:normal;font-size:13px;font-weight:700;color:#9fc6e0}
+.c-valor .texto{font-size:14px;font-weight:700;line-height:1.3;color:#dcf0fb}
+.c-barra{height:3px;border-radius:2px;background:#0d2840;overflow:hidden}
+.c-barra i{display:block;height:100%;background:var(--c);box-shadow:0 0 9px var(--c)}
+.c-pe{display:flex;align-items:center;justify-content:space-between;gap:8px;font:700 9px/1.3 ui-monospace,Consolas,monospace;letter-spacing:1.2px;text-transform:uppercase}
+.c-faixa{color:var(--c)}.c-peso{color:#6f93ad;text-align:right}
+.cartao[data-especie=informacao] .c-barra{visibility:hidden}
+.aviso{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;color:#ffc27a;letter-spacing:.3px;text-transform:none}
+
+/* legenda fixa */
+.legenda{position:absolute;z-index:105;left:16px;bottom:14px;display:flex;flex-wrap:wrap;gap:4px 13px;max-width:min(560px,60vw);
+  padding:9px 13px;border:1px solid #1d6fa055;border-radius:11px;background:#031327e8;backdrop-filter:blur(6px);font-size:10px;color:#a7cde9}
+.legenda span{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.legenda i{width:9px;height:9px;border-radius:3px;background:currentColor;box-shadow:0 0 7px currentColor}
+.rodape{position:absolute;z-index:104;right:18px;bottom:16px;display:flex;align-items:center;gap:9px;font-size:9px;letter-spacing:1.4px;color:#7e9fba}
+.rodape .vmark{font-size:25px;line-height:.9;font-weight:950;font-style:italic;letter-spacing:-5px;padding-right:6px;
+  background:linear-gradient(132deg,#7ff3ff 4%,#19c9fa 55%,#1362e9 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* gaveta de análise */
+.gaveta{position:absolute;z-index:300;top:70px;bottom:0;right:0;width:min(460px,100%);transform:translateX(102%);transition:transform .3s ease;
+  background:linear-gradient(170deg,#06243ff7,#030f20fa);border-left:1px solid #2b84bd88;box-shadow:-24px 0 60px #000b;
+  display:flex;flex-direction:column;overflow:hidden}
+.gaveta.aberta{transform:none}
+.g-top{flex:0 0 auto;padding:18px 20px 14px;border-bottom:1px solid #16456688}
+.g-fecha{float:right;background:transparent;border:0;color:#a8d7ea;font-size:21px;line-height:1;padding:0 2px}
+.g-eyebrow{font-size:9.5px;letter-spacing:2.4px;color:#63ddff;font-weight:700}
+.g-nome{margin:7px 0 0;font-size:19px;font-weight:840;line-height:1.2;padding-right:22px}
+.g-linha{display:flex;align-items:baseline;gap:9px;margin-top:11px;flex-wrap:wrap}
+.g-valor{font-size:34px;font-weight:900;letter-spacing:-1.6px;line-height:1;color:var(--c)}
+.g-un{font-size:14px;font-weight:700;color:#9fc6e0}
+.g-chip{margin-left:auto;padding:5px 11px;border-radius:20px;font-size:10px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;
+  color:var(--c);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);background:color-mix(in srgb,var(--c) 13%,transparent)}
+.g-corpo{flex:1;overflow:auto;padding:4px 20px 26px;scrollbar-width:thin}
+.bloco{padding:16px 0}
+.bloco+.bloco{border-top:1px solid #15405e66}
+.bloco h4{margin:0 0 8px;font-size:9.5px;letter-spacing:2.4px;color:#6fa5c6;font-weight:700;text-transform:uppercase}
+.bloco p{margin:0;font-size:12.5px;line-height:1.65;color:#c4deef}
+.bloco p+p{margin-top:9px}
+.bloco .nota-conta{font-size:12px;color:#9fc6e0;line-height:1.7}
+.bloco .nota-conta b{color:#e2f3fd;font-weight:750}
+.escala{position:relative;height:30px;margin:12px 0 6px}
+.escala .trilha{position:absolute;left:0;right:0;top:11px;height:7px;border-radius:4px;overflow:hidden;display:flex}
+.escala .trilha i{height:100%}
+.escala .marca{position:absolute;top:3px;width:3px;height:23px;border-radius:2px;background:#fff;box-shadow:0 0 9px #fff,0 0 3px #000}
+.escala-leg{display:flex;justify-content:space-between;font:700 9px ui-monospace,Consolas,monospace;color:#7196ad;letter-spacing:.8px}
+.spark{display:block;width:100%;height:52px;margin:4px 0 8px}
+.tend{font-size:12.5px;line-height:1.6;color:#c4deef}.tend b{color:#e6f8ff}
+.tabela{width:100%;border-collapse:collapse;font-size:12px}
+.tabela th{text-align:left;font:700 9px ui-monospace,Consolas,monospace;letter-spacing:1.4px;color:#6fa5c6;text-transform:uppercase;padding:0 8px 7px 0}
+.tabela td{padding:7px 8px 7px 0;border-top:1px solid #14405c66;color:#cfe8f7;vertical-align:top}
+.tabela td.n{text-align:right;font-variant-numeric:tabular-nums;font-weight:750;white-space:nowrap;color:#e6f8ff}
+.tabela .prop{display:block;height:3px;margin-top:5px;border-radius:2px;background:#45c9ff;box-shadow:0 0 7px #45c9ff88;min-width:2px}
+.miudo{font:700 9px ui-monospace,Consolas,monospace;letter-spacing:1.2px;color:#6f93ad}
+.vazio{font-size:12.5px;color:#93b8d0;line-height:1.6;margin:0}
+.falha{padding:11px 13px;border-radius:9px;background:#3a1512;color:#ffb3a7;border:1px solid #7a3a33;font-size:12.5px;line-height:1.55}
+
+/* portas e recados em tela cheia */
+.capa{position:absolute;inset:0;z-index:500;display:none;place-items:center;background:#010916e8;backdrop-filter:blur(8px);padding:20px}
+.capa.visivel{display:grid}
+.caixa{width:min(420px,100%);padding:26px;border:1px solid #35bcf7;border-radius:18px;background:linear-gradient(155deg,#082b4d,#041326);box-shadow:0 25px 85px #000e}
+.caixa h3{margin:6px 0 8px;font-size:21px;font-weight:840}.caixa .eyebrow{font-size:9.5px;letter-spacing:2.4px;color:#63ddff;font-weight:700}
+.caixa p{margin:0;font-size:12.5px;line-height:1.7;color:#b9d4e3}
+.form{display:grid;gap:11px;margin-top:15px}
+.form label{display:grid;gap:5px;font-size:11px;font-weight:650;color:#9fc6e0;letter-spacing:.3px}
+.form input{height:42px;border-radius:10px;border:1px solid #2b84bd88;background:#021325;color:#fff;padding:0 13px;font-size:14px;outline:0}
+.form input:focus{border-color:#48e5ff;box-shadow:0 0 0 3px #37d9ff22}
+.form .entrar{height:44px;border-radius:10px;border:1px solid #6ff0ff;background:linear-gradient(120deg,#0fb4ff,#1565e8);color:#fff;font-weight:800;letter-spacing:1px;font-size:14px}
+.form .entrar:disabled{opacity:.6;cursor:wait}
+.erro{display:none;padding:10px 12px;border-radius:9px;font-size:12.5px;background:#3a1512;color:#ffb3a7;border:1px solid #7a3a33}.erro.on{display:block}
+.fino{font-size:11.5px;color:#86a9c0;margin-top:12px;line-height:1.55}
+.caixa .acoes{display:flex;gap:9px;margin-top:16px;flex-wrap:wrap}
+.caixa .acoes a,.caixa .acoes button{border:1px solid #2abcfb;border-radius:9px;padding:10px 15px;background:#0a6ba6;color:#fff;font-size:12.5px;font-weight:650;text-decoration:none}
+.caixa .acoes .sec{background:transparent;border-color:#2b84bd88;color:#bfe3f7}
+
+@media(max-width:1180px){.main{grid-template-columns:minmax(270px,34%) 1fr}.cards{grid-template-columns:repeat(auto-fill,minmax(186px,1fr))}}
+@media(max-width:900px){
+  .main{grid-template-columns:1fr;grid-template-rows:auto 1fr;overflow:auto}
+  .lado{padding:16px 16px 6px;flex-direction:row;gap:18px;justify-content:flex-start;align-items:center;flex-wrap:wrap}
+  .idg-rot,.idg-tit{width:100%;text-align:left}.idg-tit{margin:4px 0 10px}
+  .globo{width:min(140px,34vw)}.idg-num b{font-size:40px}.idg-num small{font-size:9px;letter-spacing:2px}
+  .idg-meta{text-align:left;justify-items:start;margin-top:0;max-width:none;flex:1}
+  .painel{overflow:visible;padding:8px 16px 120px}
+  .legenda{max-width:calc(100vw - 32px);left:12px;bottom:10px}.rodape{display:none}
+  .gaveta{width:100%;top:0}
+}
+@media(max-width:560px){.brand em{display:none}.quem{display:none}.escolha label{display:none}.volta span{display:none}}
+@media(prefers-reduced-motion:reduce){.globo .anel.b{animation:none}.gaveta{transition:none}}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+<header class="top">
+  <a class="volta" href="./#cliente" title="Voltar ao portal">&#8592;<span>Portal</span></a>
+  <div class="brand"><h1>IOT <span>CITY</span></h1><em>AUDIT</em></div>
+  <div class="top-right">
+    <div class="escolha" id="escolhaSistema" hidden><label for="selSistema">SISTEMA</label><select id="selSistema"></select></div>
+    <div class="escolha" id="escolhaEscopo" hidden><label for="selEscopo" id="rotuloEscopo">CLIENTE</label><select id="selEscopo"></select></div>
+    <button type="button" class="acao" id="btnColetar" hidden title="Executar a coleta agora">
+      <svg viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-2.6-6.4"/><path d="M21 3v5h-5"/></svg>Coletar</button>
+    <span class="quem" id="quem"></span>
+  </div>
+</header>
+
+<main class="main">
+  <section class="lado">
+    <div class="idg-rot">ÍNDICE DE DESEMPENHO GERAL</div>
+    <h2 class="idg-tit" id="idgTitulo">&nbsp;</h2>
+    <div class="globo" id="globoBox">
+      <div class="anel"></div><div class="anel b"></div>
+      <div class="world" id="world"><img src="terra.webp" alt="" draggable="false"></div>
+      <div class="idg-num"><b id="idgValor">&mdash;</b><small id="idgFaixa"></small></div>
+    </div>
+    <div class="idg-meta" id="idgMeta"></div>
+  </section>
+
+  <section class="painel">
+    <h2 id="painelTit">Indicadores</h2>
+    <p class="sub">Clique em um cartão para ver a análise por trás do número.</p>
+    <div id="grupos"></div>
+  </section>
+</main>
+
+<div class="legenda" id="legenda"></div>
+<div class="rodape"><span class="vmark">V</span><span>VYONX &bull; IOT CITY AUDIT</span></div>
+
+<aside class="gaveta" id="gaveta" aria-hidden="true" aria-label="Análise do indicador">
+  <div class="g-top">
+    <button class="g-fecha" type="button" id="gFecha" aria-label="Fechar">&times;</button>
+    <div class="g-eyebrow" id="gEyebrow"></div>
+    <h3 class="g-nome" id="gNome"></h3>
+    <div class="g-linha"><span class="g-valor" id="gValor"></span><span class="g-un" id="gUn"></span><span class="g-chip" id="gChip"></span></div>
+  </div>
+  <div class="g-corpo" id="gCorpo"></div>
+</aside>
+
+<div class="capa" id="capa"><div class="caixa" id="caixa"></div></div>
+</div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}</script>
+<script type="module" src="globo.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
+<script src="icones.js"></script>
+<script>
+(()=>{'use strict';
+/* IOT CITY AUDIT — o IDG e os indicadores dos sistemas monitorados.
+   Cada cartão mostra UM número consolidado; o clique amplia e responde três
+   perguntas: o que o número é, como a nota saiu, e quais itens estão por trás.
+   Nada é calculado aqui: o índice vem de idg_calcular e as notas do gatilho do
+   banco. Esta tela explica a conta, não a refaz. */
+const $=id=>document.getElementById(id);
+const SB=window.supabase?window.supabase.createClient(IOT_SUPA.url,IOT_SUPA.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}):null;
+const esc=s=>(s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* Azul fora: a escala de desempenho vai de verde a vermelho e mais nada.
+   Cinza e neutro NÃO são a mesma coisa — cinza é indicador que devia ter nota e
+   está sem dado; neutro é informação, que nunca teve nota para dar. Pintar os
+   dois igual faria procurar defeito onde não há. */
+const COR={verde:'#2fe3a2',amarelo:'#ffd24a',laranja:'#ff9333',vermelho:'#ff4f6a',cinza:'#7f9db2',neutro:'#49c8ee'};
+const FAIXA={verde:'Saudável',amarelo:'Atenção',laranja:'Risco',vermelho:'Crítico',cinza:'Sem dado',neutro:'Informação'};
+const LEGENDA=[['verde','Saudável'],['amarelo','Atenção'],['laranja','Risco'],['vermelho','Crítico'],['cinza','Sem dado'],['neutro','Informação (sem nota)']];
+const SENTIDO={maior_melhor:'quanto maior, melhor',menor_melhor:'quanto menor, melhor',faixa_ideal:'melhor perto do centro'};
+/* nomes crus que chegam no detalhamento das fontes */
+const ROTULO={healthy:'Saudáveis',attention:'Em atenção',high_risk:'Risco alto',total:'Total',desatualizados:'Desatualizados',
+  com_falha:'Com falha',dimensao:'Dimensão',codigo:'Código',dispositivos:'Aparelhos',exemplo:'O que foi encontrado',
+  energia:'Energia',controle:'Controle',eficiencia:'Eficiência',comunicacao:'Comunicação',tempo:'Tempo',cyber:'Cibernética',operational:'Operacional'};
+
+let SESSAO=null,PAPEL=null,SISTEMAS=[],ESCOPOS=[],CARTOES=[],IDG=null,sistema=null,escopo=null,aberto=null;
+
+const num=(v,d)=>v==null?'—':Number(v).toLocaleString('pt-BR',{minimumFractionDigits:d||0,maximumFractionDigits:d||0});
+const rot=k=>ROTULO[k]||String(k).replace(/_/g,' ').replace(/^./,c=>c.toUpperCase());
+const quando=t=>{ if(!t) return '—'; const d=new Date(t);
+  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'short'})+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}); };
+
+/* ---------- porta de entrada ---------- */
+function capa(html){ $('caixa').innerHTML=html; $('capa').classList.add('visivel'); }
+function fecharCapa(){ $('capa').classList.remove('visivel'); }
+function telaLogin(msg){
+  capa('<div class="eyebrow">IOT CITY AUDIT</div><h3>Entrar</h3><p>Os indicadores são área de cliente. Acesse com seu e-mail e senha do portal.</p>'+
+    '<form class="form" id="fLogin"><label>E-mail<input id="lEmail" type="email" autocomplete="username" required></label>'+
+    '<label>Senha<input id="lSenha" type="password" autocomplete="current-password" required></label>'+
+    '<div class="erro" id="lErro"></div><button class="entrar" type="submit" id="lBtn">Entrar</button></form>'+
+    '<p class="fino">É o mesmo login do portal. Se você já entrou por lá neste navegador, não precisa repetir.</p>');
+  if(msg){ $('lErro').textContent=msg; $('lErro').classList.add('on'); }
+  setTimeout(()=>$('lEmail').focus(),30);
+  $('fLogin').onsubmit=async e=>{ e.preventDefault(); const bt=$('lBtn'); bt.disabled=true; bt.textContent='Entrando…'; $('lErro').classList.remove('on');
+    const {error}=await SB.auth.signInWithPassword({email:$('lEmail').value.trim(),password:$('lSenha').value});
+    if(error){ bt.disabled=false; bt.textContent='Entrar';
+      $('lErro').textContent=/invalid/i.test(error.message)?'E-mail ou senha inválidos.':error.message; $('lErro').classList.add('on'); return; }
+    await lerSessao();
+    if(!PAPEL){ await SB.auth.signOut(); bt.disabled=false; bt.textContent='Entrar';
+      $('lErro').textContent='Este login não tem acesso ao portal.'; $('lErro').classList.add('on'); return; }
+    fecharCapa(); iniciar(); };
+}
+function telaRecado(titulo,texto){
+  capa('<div class="eyebrow">IOT CITY AUDIT</div><h3>'+esc(titulo)+'</h3><p>'+esc(texto)+'</p>'+
+    '<div class="acoes"><a href="./#cliente">Voltar ao portal</a><button type="button" class="sec" id="rTentar">Tentar de novo</button></div>');
+  $('rTentar').onclick=()=>{ fecharCapa(); iniciar(); };
+}
+async function lerSessao(){
+  PAPEL=null; SESSAO=null; if(!SB) return;
+  const {data}=await SB.auth.getSession(); SESSAO=data.session;
+  if(SESSAO){ const {data:p}=await SB.rpc('portal_papel'); PAPEL=p||null; }
+  $('quem').textContent=SESSAO?SESSAO.user.email:'';
+  $('btnColetar').hidden=PAPEL!=='admin';
+}
+
+/* ---------- leitura ---------- */
+async function carregarSistemas(){
+  const [rs,re]=await Promise.all([
+    SB.from('idg_sistema').select('id,chave,nome,descricao,escopo_rotulo,ordem').eq('ativo',true).order('ordem'),
+    SB.from('idg_escopo').select('id,sistema_id,chave,nome,ordem').eq('ativo',true).order('ordem')]);
+  if(rs.error) throw rs.error; if(re.error) throw re.error;
+  SISTEMAS=rs.data||[]; ESCOPOS=re.data||[];
+}
+async function carregarCartoes(){
+  const [rc,ri]=await Promise.all([
+    SB.from('idg_atual').select('*').eq('sistema_id',sistema.id).eq('escopo_id',escopo.id).order('ordem'),
+    SB.rpc('idg_calcular',{p_sistema_id:sistema.id,p_escopo_id:escopo.id})]);
+  if(rc.error) throw rc.error;
+  CARTOES=rc.data||[];
+  IDG=(!ri.error&&Array.isArray(ri.data)&&ri.data[0])?ri.data[0]:null;
+}
+async function historico(indicador_id){
+  const {data}=await SB.from('idg_medicao').select('valor,indice,estado,medido_em')
+    .eq('indicador_id',indicador_id).eq('escopo_id',escopo.id).eq('ok',true)
+    .order('medido_em',{ascending:false}).limit(14);
+  return (data||[]).slice().reverse();
+}
+
+/* ---------- o índice ---------- */
+function pintarIDG(){
+  const e=IDG&&IDG.idg!=null?IDG.estado:'cinza', cor=COR[e]||COR.cinza;
+  $('app').style.setProperty('--idg',cor);
+  $('idgValor').textContent=IDG&&IDG.idg!=null?num(IDG.idg,1):'—';
+  $('idgFaixa').textContent=IDG&&IDG.idg!=null?(FAIXA[e]||''):'Sem dado';
+  $('idgTitulo').textContent=escopo?escopo.nome:'';
+  const linhas=[];
+  if(IDG&&IDG.idg!=null)
+    linhas.push('Saiu de <span class="forte">'+IDG.participantes+' de '+IDG.elegiveis+'</span> '+
+      (IDG.elegiveis===1?'indicador que participa':'indicadores que participam')+' da conta.');
+  else
+    linhas.push('Nenhum indicador medido compõe o índice agora. Os cartões ao lado mostram o que já chegou.');
+  const ult=CARTOES.filter(c=>c.medido_em).map(c=>c.medido_em).sort().pop();
+  if(ult) linhas.push('Última coleta: <span class="forte">'+esc(quando(ult))+'</span>');
+  if(sistema&&sistema.descricao) linhas.push(esc(sistema.descricao));
+  $('idgMeta').innerHTML=linhas.map(t=>'<div>'+t+'</div>').join('');
+}
+
+/* ---------- cartões ---------- */
+function valorHTML(c){
+  if(c.valor==null&&c.texto) return '<span class="texto">'+esc(c.texto)+'</span>';
+  if(c.valor==null) return '<b>&mdash;</b>'; /* sem leitura a unidade sozinha não diz nada */
+  return '<b>'+num(c.valor,c.decimais)+'</b>'+(c.unidade?'<i>'+esc(c.unidade)+'</i>':'');
+}
+function pe(c){
+  if(c.especie==='informacao') return ['Informação','fora da conta'];
+  /* vencido não é o mesmo que sem dado: existe leitura, ela é que ficou velha */
+  const f=c.vencido?'Vencido':(FAIXA[c.estado]||''), n=c.indice==null?'sem nota':'nota '+num(c.indice,0);
+  return [f+' · '+n, (c.no_idg&&c.peso>0)?'no índice':'fora da conta'];
+}
+function montar(){
+  const cont=$('grupos'); cont.innerHTML='';
+  if(!CARTOES.length){
+    cont.innerHTML='<p class="vazio">Nenhuma medição para este escopo ainda.'+
+      (PAPEL==='admin'?' Use <b>Coletar</b> no topo para buscar agora.':'')+'</p>';
+    return;
+  }
+  /* dois grupos: o que forma o índice vem primeiro, porque é o que responde
+     pelo número grande. O resto existe para enxergar de onde ele vem. */
+  const grupos=[['O que forma o índice',CARTOES.filter(c=>c.no_idg&&c.peso>0)],
+                ['Para enxergar de onde vem',CARTOES.filter(c=>!(c.no_idg&&c.peso>0))]];
+  grupos.forEach(([titulo,lista])=>{
+    if(!lista.length) return;
+    const h=document.createElement('div'); h.className='grupo'; h.textContent=titulo.toUpperCase(); cont.appendChild(h);
+    const g=document.createElement('div'); g.className='cards'; cont.appendChild(g);
+    lista.forEach(c=>{
+      const cor=COR[c.estado]||COR.cinza, rodape=pe(c);
+      const b=document.createElement('button'); b.type='button'; b.className='cartao';
+      b.dataset.estado=c.estado; b.dataset.especie=c.especie; b.style.setProperty('--c',cor);
+      b.setAttribute('aria-label','Ampliar '+c.nome);
+      b.innerHTML='<span class="c-top"><span class="c-ico">'+iotIcone(c.icone)+'</span><span class="c-nome"></span></span>'+
+        '<span class="c-valor">'+valorHTML(c)+'</span>'+
+        '<span class="c-barra"><i style="width:'+(c.indice==null?0:Math.max(2,Math.min(100,c.indice)))+'%"></i></span>'+
+        '<span class="c-pe"><span class="c-faixa"></span><span class="c-peso"></span></span>'+
+        (c.vencido?'<span class="aviso">dado vencido</span>':'')+
+        (c.ok===false?'<span class="aviso">falha na coleta</span>':'');
+      b.querySelector('.c-nome').textContent=c.nome;
+      b.querySelector('.c-faixa').textContent=rodape[0];
+      b.querySelector('.c-peso').textContent=rodape[1];
+      b.onclick=()=>abrir(c);
+      g.appendChild(b);
+    });
+  });
+}
+
+/* ---------- a análise ampliada ---------- */
+function escalaHTML(c){
+  /* desenha as faixas na ordem em que elas valem e marca onde a nota caiu */
+  const v=Math.max(0,Math.min(100,Number(c.indice)));
+  const cortes=[[Number(c.faixa_laranja),COR.vermelho],[Number(c.faixa_amarelo),COR.laranja],
+                [Number(c.faixa_verde),COR.amarelo],[100,COR.verde]];
+  let ini=0,tiras='';
+  cortes.forEach(p=>{ tiras+='<i style="width:'+Math.max(0,p[0]-ini)+'%;background:'+p[1]+'"></i>'; ini=p[0]; });
+  return '<div class="escala"><div class="trilha">'+tiras+'</div><div class="marca" style="left:calc('+v+'% - 1.5px)"></div></div>'+
+    '<div class="escala-leg"><span>0</span><span>'+num(c.faixa_laranja,0)+'</span><span>'+num(c.faixa_amarelo,0)+
+    '</span><span>'+num(c.faixa_verde,0)+'</span><span>100</span></div>';
+}
+function comoSaiuNota(c){
+  const u=c.unidade?' '+c.unidade:'';
+  /* alguns indicadores JA chegam como nota de 0 a 100 (nominal 100, crítico 0).
+     Dizer que "a leitura virou nota" seria conversa à toa: é a mesma coisa. */
+  if(!c.unidade&&c.valor!=null&&Math.abs(Number(c.valor)-Number(c.indice))<0.05)
+    return '<p class="nota-conta">A leitura já é uma nota de 0 a 100: <b>'+num(c.indice,c.decimais)+'</b>, faixa <b>'+
+      (FAIXA[c.estado]||'')+'</b>. Não há conversão no caminho — o que a fonte publica é o que está aqui.</p>'+escalaHTML(c);
+  let calib='';
+  if(c.sentido==='maior_melhor') calib='Nota 100 ao chegar em <b>'+num(c.nominal,c.decimais)+u+'</b>; nota 0 em <b>'+num(c.critico,c.decimais)+u+'</b> ou abaixo.';
+  else if(c.sentido==='menor_melhor') calib='Nota 100 em <b>'+num(c.nominal,c.decimais)+u+'</b> ou abaixo; nota 0 em <b>'+num(c.critico,c.decimais)+u+'</b> ou acima.';
+  else if(c.sentido==='faixa_ideal') calib='Nota 100 em <b>'+num(c.nominal,c.decimais)+u+'</b>, caindo a 0 nas bordas <b>'+
+    num(c.critico_baixo,c.decimais)+u+'</b> e <b>'+num(c.critico_alto,c.decimais)+u+'</b>.';
+  const falta=(c.valor!=null&&c.nominal!=null&&Number(c.indice)<100)
+    ? ' Faltam <b>'+num(Math.abs(Number(c.nominal)-Number(c.valor)),c.decimais)+u+'</b> para a nota cheia.' : '';
+  return '<p class="nota-conta">Leitura de <b>'+num(c.valor,c.decimais)+u+'</b> virou nota <b>'+num(c.indice,0)+' de 100</b>, faixa <b>'+
+      (FAIXA[c.estado]||'')+'</b>.'+(SENTIDO[c.sentido]?' O indicador é '+SENTIDO[c.sentido]+'.':'')+'</p>'+
+    (calib?'<p class="nota-conta">'+calib+falta+'</p>':'')+escalaHTML(c);
+}
+function sparkHTML(pts,cor){
+  if(pts.length<2) return '';
+  const W=400,H=48,min=Math.min.apply(null,pts),max=Math.max.apply(null,pts),amp=(max-min)||1;
+  const x=i=>i*(W/(pts.length-1)), y=v=>H-5-((v-min)/amp)*(H-12);
+  const linha=pts.map((v,i)=>(i?'L':'M')+x(i).toFixed(1)+' '+y(v).toFixed(1)).join(' ');
+  return '<svg class="spark" viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="none" aria-hidden="true">'+
+    '<path d="'+linha+' L'+W+' '+H+' L0 '+H+' Z" fill="'+cor+'" opacity=".14"/>'+
+    '<path d="'+linha+'" fill="none" stroke="'+cor+'" stroke-width="2.2" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>'+
+    '<circle cx="'+x(pts.length-1).toFixed(1)+'" cy="'+y(pts[pts.length-1]).toFixed(1)+'" r="3.4" fill="'+cor+'"/></svg>';
+}
+function tendenciaHTML(c,serie){
+  if(serie.length<2) return '<p class="vazio">Só existe uma coleta deste indicador até agora, então ainda não há direção para mostrar — '+
+    'e inventar uma seta com um ponto só seria chute. A próxima coleta já desenha a linha.</p>';
+  const base=c.especie==='informacao'?'valor':'indice';
+  const pts=serie.map(p=>p[base]==null?null:Number(p[base])).filter(v=>v!=null);
+  const a=serie[0],b=serie[serie.length-1],d=Number(b[base])-Number(a[base]);
+  const palavra=Math.abs(d)<0.05?'Estável':(d>0?'Subindo':'Caindo');
+  const quanto=Math.abs(d)<0.05?'':' — '+(d>0?'+':'−')+num(Math.abs(d),base==='indice'?1:(c.decimais||0))+
+    (base==='indice'?' pontos':(c.unidade?' '+c.unidade:''));
+  return sparkHTML(pts,COR[c.estado]||COR.cinza)+
+    '<p class="tend"><b>'+palavra+'</b>'+quanto+', de '+esc(quando(a.medido_em))+' a '+esc(quando(b.medido_em))+'.</p>'+
+    '<p class="tend miudo" style="margin-top:7px">'+serie.length+' COLETAS NO PERÍODO</p>';
+}
+function detalheHTML(c){
+  const d=c.detalhe;
+  if(d==null||(Array.isArray(d)&&!d.length)) return '<p class="vazio">Esta leitura não trouxe detalhamento.</p>';
+  if(Array.isArray(d)){
+    /* lista de itens (ex.: as causas). Ordena pelo maior número e desenha a
+       proporção, porque a pergunta real é "o que atinge mais aparelhos". */
+    const chaves=Object.keys(d.reduce((a,o)=>Object.assign(a,o||{}),{}));
+    const numerica=chaves.filter(k=>d.every(o=>typeof o[k]==='number'))[0];
+    /* a coluna principal é a de texto mais longo: a frase que explica, não o
+       código interno. Escolher "o primeiro string grande o bastante" punha
+       PATCH_AVAILABLE no lugar da descrição da causa. */
+    const media=k=>d.reduce((s,o)=>s+(typeof o[k]==='string'?o[k].length:0),0)/d.length;
+    const texto=chaves.filter(k=>k!==numerica&&d.some(o=>typeof o[k]==='string')).sort((a,b)=>media(b)-media(a))[0]
+             || chaves.filter(k=>k!==numerica)[0];
+    const outras=chaves.filter(k=>k!==numerica&&k!==texto);
+    const maior=numerica?Math.max.apply(null,d.map(o=>Number(o[numerica])||0)):0;
+    const linhas=d.slice().sort((x,y)=>numerica?(Number(y[numerica])||0)-(Number(x[numerica])||0):0).map(o=>
+      '<tr><td>'+esc(o[texto]!=null?o[texto]:'—')+
+        (outras.length?'<br><span class="miudo">'+outras.map(k=>esc(rot(k))+': '+esc(o[k])).join(' · ')+'</span>':'')+
+        (numerica&&maior?'<span class="prop" style="width:'+Math.max(2,100*(Number(o[numerica])||0)/maior)+'%"></span>':'')+
+      '</td>'+(numerica?'<td class="n">'+num(o[numerica],0)+'</td>':'')+'</tr>').join('');
+    return '<table class="tabela"><thead><tr><th>'+esc(rot(texto||'Item'))+'</th>'+
+      (numerica?'<th style="text-align:right">'+esc(rot(numerica))+'</th>':'')+'</tr></thead><tbody>'+linhas+'</tbody></table>';
+  }
+  if(typeof d==='object'){
+    const ent=Object.keys(d).filter(k=>typeof d[k]!=='object').map(k=>[k,d[k]]);
+    const maior=Math.max.apply(null,ent.map(p=>typeof p[1]==='number'?p[1]:0).concat([0]));
+    return '<table class="tabela"><tbody>'+ent.map(p=>
+      '<tr><td>'+esc(rot(p[0]))+(typeof p[1]==='number'&&maior?'<span class="prop" style="width:'+Math.max(2,100*p[1]/maior)+'%"></span>':'')+
+      '</td><td class="n">'+(typeof p[1]==='number'?num(p[1],0):esc(p[1]))+'</td></tr>').join('')+'</tbody></table>';
+  }
+  return '<p class="nota-conta">'+esc(String(d))+'</p>';
+}
+function participacaoHTML(c){
+  const dentro=CARTOES.filter(x=>x.no_idg&&x.peso>0);
+  const soma=dentro.reduce((s,x)=>s+Number(x.peso),0);
+  if(c.no_idg&&c.peso>0&&soma>0)
+    return '<p class="nota-conta">Entra no índice com peso <b>'+num(100*Number(c.peso)/soma,0)+'%</b>'+
+      (dentro.length===1?', sozinho — o índice deste sistema é este número':'')+'.</p>'+
+      (c.observacao?'<p>'+esc(c.observacao)+'</p>':'');
+  return '<p class="nota-conta"><b>Fora da conta do índice.</b> Mostra e explica, mas não pesa.</p>'+
+    (c.observacao?'<p>'+esc(c.observacao)+'</p>':'');
+}
+async function abrir(c){
+  aberto=c.indicador_id;
+  const g=$('gaveta');
+  g.style.setProperty('--c',COR[c.estado]||COR.cinza);
+  g.classList.add('aberta'); g.setAttribute('aria-hidden','false');
+  $('gEyebrow').textContent=(sistema?sistema.nome:'')+' • '+(escopo?escopo.nome:'');
+  $('gNome').textContent=c.nome;
+  $('gValor').textContent=(c.valor==null&&c.texto)?c.texto:num(c.valor,c.decimais);
+  $('gUn').textContent=c.valor==null?'':(c.unidade||'');
+  $('gChip').textContent=c.vencido?'Vencido':(FAIXA[c.estado]||'');
+  const horas=Math.round(Number(c.validade_seg)/3600);
+  $('gCorpo').innerHTML=
+    (c.ok===false?'<div class="bloco"><div class="falha"><b>A coleta falhou.</b><br>'+esc(c.erro||'Sem detalhe.')+
+      '<br>O número acima é a última leitura que deu certo, se houver.</div></div>':'')+
+    (c.vencido?'<div class="bloco"><div class="falha"><b>Dado vencido.</b><br>A última leitura é de '+esc(quando(c.medido_em))+
+      ' e passou da validade, então o indicador deixou de ter nota em vez de mostrar número velho.</div></div>':'')+
+    '<div class="bloco"><h4>O que é este número</h4><p>'+esc(c.descricao||'Sem descrição cadastrada.')+'</p></div>'+
+    (c.especie==='indicador'&&c.indice!=null?'<div class="bloco"><h4>Como a nota saiu</h4>'+comoSaiuNota(c)+'</div>':'')+
+    '<div class="bloco"><h4>Para onde vai</h4><div id="gTend"><p class="vazio">Lendo o histórico…</p></div></div>'+
+    '<div class="bloco"><h4>O que está por trás</h4>'+detalheHTML(c)+'</div>'+
+    '<div class="bloco"><h4>Participação no índice</h4>'+participacaoHTML(c)+'</div>'+
+    '<div class="bloco"><h4>Procedência</h4><p class="nota-conta">Medido em <b>'+esc(quando(c.medido_em))+'</b>. '+
+      'Vale por '+num(horas,0)+' h; depois '+(c.especie==='informacao'?'deixa de valer':'fica sem nota em vez de mostrar número velho')+'.</p></div>';
+  $('gCorpo').scrollTop=0;
+  const serie=await historico(c.indicador_id);
+  if(aberto===c.indicador_id&&$('gTend')) $('gTend').innerHTML=tendenciaHTML(c,serie);
+}
+function fecharGaveta(){ $('gaveta').classList.remove('aberta'); $('gaveta').setAttribute('aria-hidden','true'); aberto=null; }
+$('gFecha').onclick=fecharGaveta;
+document.addEventListener('keydown',e=>{ if(e.key==='Escape') fecharGaveta(); });
+
+/* ---------- seletores ---------- */
+function encherSeletores(){
+  const ss=$('selSistema'); ss.innerHTML='';
+  SISTEMAS.forEach(s=>{ const o=document.createElement('option'); o.value=s.id; o.textContent=s.nome; ss.appendChild(o); });
+  ss.value=sistema.id; $('escolhaSistema').hidden=SISTEMAS.length<2;
+  const meus=ESCOPOS.filter(e=>e.sistema_id===sistema.id);
+  const se=$('selEscopo'); se.innerHTML='';
+  meus.forEach(e=>{ const o=document.createElement('option'); o.value=e.id; o.textContent=e.nome; se.appendChild(o); });
+  if(escopo) se.value=escopo.id;
+  $('rotuloEscopo').textContent=(sistema.escopo_rotulo||'Escopo').toUpperCase();
+  $('escolhaEscopo').hidden=!meus.length;
+  $('painelTit').textContent='Indicadores · '+sistema.nome;
+}
+async function trocarEscopo(id){
+  const e=ESCOPOS.filter(x=>x.id===id)[0]; if(!e) return;
+  escopo=e; try{ localStorage.setItem('audit-escopo',id); }catch(_){}
+  fecharGaveta(); await carregarCartoes(); pintarIDG(); montar();
+}
+$('selEscopo').onchange=e=>trocarEscopo(e.target.value);
+$('selSistema').onchange=async e=>{
+  sistema=SISTEMAS.filter(s=>s.id===e.target.value)[0];
+  try{ localStorage.setItem('audit-sistema',sistema.id); }catch(_){}
+  const meus=ESCOPOS.filter(x=>x.sistema_id===sistema.id);
+  escopo=meus[0]||null; encherSeletores();
+  if(escopo) await trocarEscopo(escopo.id);
+  else { CARTOES=[]; IDG=null; pintarIDG(); montar(); }
+};
+
+/* ---------- coleta manual (só admin) ---------- */
+$('btnColetar').onclick=async()=>{
+  const b=$('btnColetar'), antes=b.innerHTML;
+  b.disabled=true; b.textContent='Coletando…';
+  try{
+    const r=await SB.functions.invoke('idg-coletar',{body:{}});
+    if(r.error) throw r.error;
+    if(escopo) await carregarCartoes();
+    pintarIDG(); montar();
+    const falhas=((r.data&&r.data.resumo)||[]).filter(x=>x.erro);
+    if(falhas.length) telaRecado('Coleta com falhas',falhas.map(f=>f.funcao+' / '+f.escopo+': '+f.erro).join(' · '));
+  }catch(err){ telaRecado('A coleta não rodou',err.message||String(err)); }
+  b.disabled=false; b.innerHTML=antes;
+};
+
+/* ---------- partida ---------- */
+$('legenda').innerHTML=LEGENDA.map(p=>'<span style="color:'+COR[p[0]]+'"><i></i><span style="color:#a7cde9">'+p[1]+'</span></span>').join('');
+async function iniciar(){
+  try{
+    if(!SB) throw new Error('supabase-js não carregou');
+    await lerSessao();
+    if(!PAPEL) return telaLogin();
+    await carregarSistemas();
+    if(!SISTEMAS.length) return telaRecado('Nada monitorado ainda',
+      'Nenhum sistema foi cadastrado no IDG. O cadastro fica na administração do portal.');
+    let sid=null,eid=null; try{ sid=localStorage.getItem('audit-sistema'); eid=localStorage.getItem('audit-escopo'); }catch(_){}
+    sistema=SISTEMAS.filter(s=>s.id===sid)[0]||SISTEMAS[0];
+    const meus=ESCOPOS.filter(x=>x.sistema_id===sistema.id);
+    escopo=meus.filter(e=>e.id===eid)[0]||meus[0]||null;
+    encherSeletores();
+    if(escopo) await carregarCartoes(); else { CARTOES=[]; IDG=null; }
+    pintarIDG(); montar();
+  }catch(err){
+    console.warn('AUDIT: falha ao carregar',err);
+    telaRecado('Não foi possível carregar',err.message||String(err));
+  }
+}
+iniciar();
+window.IOTAudit={recarregar:iniciar,cartoes:()=>CARTOES,idg:()=>IDG};
+})();
+</script>
+</body>
+</html>
