@@ -535,7 +535,9 @@ $('btnColetar').onclick=async()=>{
   const b=$('btnColetar'), antes=b.innerHTML;
   b.disabled=true; b.textContent='Coletando…';
   try{
-    const r=await SB.functions.invoke('idg-coletar',{body:{}});
+    /* o agendador respeita o intervalo do cadastro; o botão é um pedido
+       explícito de alguém olhando a tela, então força */
+    const r=await SB.functions.invoke('idg-coletar',{body:{forcar:true}});
     if(r.error) throw r.error;
     if(escopo) await carregarCartoes();
     pintarIDG(); montar();

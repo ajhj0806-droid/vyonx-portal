@@ -266,7 +266,13 @@ function abaIDG(box){
       <td>${i.ativo?'Sim':'<span class="mut">Não</span>'}</td>
       <td style="white-space:nowrap"><button class="btn sm" data-edi="${i.id}">Editar</button> <button class="btn sm perigo" data-deli="${i.id}">Excluir</button></td></tr>`).join('')
       ||'<tr><td colspan="9" class="mut">Nenhum indicador cadastrado.</td></tr>'}
-    </tbody></table></div><div id="edInd"></div>`:''}`;
+    </tbody></table></div><div id="edInd"></div>
+
+   <div class="card"><h2>Coletas automáticas</h2>
+    <p class="desc">O banco chama o coletor de hora em hora (minuto 7). Cada indicador só é buscado quando o intervalo dele vence,
+     então uma execução com tudo "adiado" é sinal de que está funcionando, não de que falhou.
+     O registro guarda 30 dias; a resposta detalhada some em poucas horas, que é o tempo que o Postgres mantém.</p>
+    <div id="coletas" class="mut">Lendo…</div></div>`:''}`;
 
   const $=x=>box.querySelector(x);
   box.querySelectorAll('[data-sis]').forEach(b=>b.onclick=()=>{IDGSIS=b.dataset.sis;EDITS=EDITE=EDITI=null;render();});
@@ -297,8 +303,36 @@ function abaIDG(box){
   box.querySelectorAll('[data-iup]').forEach(b=>b.onclick=()=>trocaInd(+b.dataset.iup,+b.dataset.iup-1));
   box.querySelectorAll('[data-idn]').forEach(b=>b.onclick=()=>trocaInd(+b.dataset.idn,+b.dataset.idn+1));
 
+  if(s) listarColetas(box.querySelector('#coletas'));
   if(EDITS) editorSistema(); else if(EDITE) editorEscopo();
   if(EDITI) editorIndicador();
+}
+
+async function listarColetas(box){
+  if(!box) return;
+  const {data,error}=await SB.rpc('idg_coletas_recentes');
+  if(error){ box.innerHTML='<span class="mut">Não foi possível ler: '+esc(error.message)+'</span>'; return; }
+  if(!data||!data.length){ box.innerHTML='<span class="mut">Nenhuma execução registrada ainda. A primeira sai no próximo minuto 7.</span>'; return; }
+  box.className='';
+  box.innerHTML=`<table><thead><tr><th>Quando</th><th>Origem</th><th>Resposta</th></tr></thead><tbody>${
+    data.map(c=>{ const r=c.resposta||{};
+      const quando=new Date(c.disparada_em).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+      let diz;
+      if(c.erro) diz='<span style="color:#ffb3a7">'+esc(c.erro)+'</span>';
+      else if(c.status==null) diz='<span class="mut">sem resposta guardada</span>';
+      else if(c.status!==200) diz='<span style="color:#ffb3a7">HTTP '+esc(c.status)+'</span>';
+      else { const falhas=(r.resumo||[]).filter(x=>x.erro);
+        const colhidos=(r.resumo||[]).reduce((a,x)=>a+(x.indicadores||0),0);
+        /* "nada a coletar" só quando de fato não havia o que fazer; se houve
+           falha, a execução tentou e não conseguiu, que é outra conversa */
+        const partes=[];
+        if(colhidos) partes.push('<b>'+colhidos+'</b> coletado(s)');
+        else if(!falhas.length) partes.push('nada a coletar');
+        if(r.adiados) partes.push('<span class="mut">'+r.adiados+' ainda no prazo</span>');
+        if(falhas.length) partes.push('<span style="color:#ffb3a7">'+falhas.length+' falha(s): '+esc(falhas[0].erro)+'</span>');
+        diz=partes.join(' · '); }
+      return `<tr><td>${esc(quando)}</td><td class="mut">${esc(c.origem)}</td><td>${diz}</td></tr>`;
+    }).join('')}</tbody></table>`;
 }
 
 function editorSistema(){

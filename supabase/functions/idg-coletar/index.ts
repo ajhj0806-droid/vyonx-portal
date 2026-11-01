@@ -5,7 +5,13 @@
 // normalização e a classificação são do banco (gatilho idg_classificar), para
 // a matemática viver num lugar só.
 //
-// Segurança: a credencial da fonte nunca sai daqui. O conector do Raio-X chama
+// Quem pode chamar (o verify_jwt sozinho não bastava: ele aceita a chave
+// publicável, que está no icones.js, público):
+//   · cabeçalho x-idg-token válido → é o agendador (pg_cron lê do Vault)
+//   · JWT de um admin do portal    → é o botão "Coletar" da tela
+//   · qualquer outra coisa         → 403
+//
+// Segurança da fonte: a credencial do Raio-X nunca sai daqui. O conector chama
 // UMA função remota (idg_agregados) que devolve apenas números consolidados e
 // quebra por causa — nunca uma linha de dispositivo.
 
@@ -21,7 +27,8 @@ const PORTAL = createClient(
 )
 
 /** Catálogo de conectores. Só o que está aqui pode ser chamado — nunca código
- *  informado no cadastro (seção 5.1 da especificação). */
+ *  informado no cadastro (seção 5.1 da especificação). O banco também recusa,
+ *  por chave estrangeira com idg_conector; aqui é a segunda tranca. */
 const CONECTORES: Record<string, Conector> = {
   'raiox.agregados': async (escopo) => {
     const url = Deno.env.get('RAIOX_URL')
@@ -42,24 +49,66 @@ const CONECTORES: Record<string, Conector> = {
   },
 }
 
+/** Devolve quem está chamando, ou null se ninguém autorizado. */
+async function autorizar(req: Request): Promise<string | null> {
+  const token = req.headers.get('x-idg-token')
+  if (token) {
+    const { data } = await PORTAL.rpc('idg_cron_token_ok', { p_token: token })
+    if (data === true) return 'agendador'
+  }
+  const jwt = (req.headers.get('authorization') ?? '').replace(/^Bearer\s+/i, '')
+  if (jwt) {
+    const { data: u } = await PORTAL.auth.getUser(jwt)
+    if (u?.user) {
+      const { data: p } = await PORTAL
+        .from('portal_usuario').select('papel')
+        .eq('user_id', u.user.id).eq('ativo', true).maybeSingle()
+      if (p?.papel === 'admin') return `admin:${u.user.email}`
+    }
+  }
+  return null
+}
+
 Deno.serve(async (req) => {
   if (req.method !== 'POST') return new Response('método', { status: 405 })
+
+  const quem = await autorizar(req)
+  if (!quem) return Response.json({ erro: 'não autorizado' }, { status: 403 })
+
+  // O botão da tela pode forçar; o agendador respeita o intervalo do cadastro.
+  let forcar = false
+  try { forcar = (await req.json())?.forcar === true } catch (_) { /* corpo vazio */ }
 
   const inicio = Date.now()
   const resumo: Record<string, unknown>[] = []
 
   const { data: indicadores, error } = await PORTAL
     .from('idg_indicador')
-    .select('id, chave, funcao, parametros, especie, sistema_id, idg_sistema!inner(chave, ativo)')
+    .select('id, chave, funcao, parametros, especie, intervalo_seg, sistema_id, idg_sistema!inner(chave, ativo)')
     .eq('ativo', true)
   if (error) return Response.json({ erro: error.message }, { status: 500 })
 
   const { data: escopos } = await PORTAL.from('idg_escopo').select('id, chave, sistema_id').eq('ativo', true)
 
+  // Quando cada par (indicador, escopo) foi medido pela última vez. idg_atual
+  // já é exatamente isso, e indicador que nunca foi medido simplesmente não
+  // aparece aqui — então entra como vencido, que é o certo.
+  const { data: ultimas } = await PORTAL.from('idg_atual').select('indicador_id, escopo_id, medido_em')
+  const quando = new Map((ultimas ?? []).map((m) => [`${m.indicador_id}|${m.escopo_id}`, Date.parse(m.medido_em)]))
+  const agora = Date.now()
+  const naHora = (indId: string, escId: string, intervalo: number) => {
+    if (forcar) return true
+    const t = quando.get(`${indId}|${escId}`)
+    return t === undefined || agora - t >= (intervalo ?? 3600) * 1000
+  }
+
   // Uma chamada por (sistema, escopo) serve todos os indicadores daquele par.
+  // Se nenhum deles está na hora, o par inteiro é pulado e a fonte nem é tocada.
   const pares = new Map<string, { funcao: string; escopo: { id: string; chave: string }; itens: typeof indicadores }>()
+  let adiados = 0
   for (const ind of indicadores ?? []) {
     for (const esc of (escopos ?? []).filter((e) => e.sistema_id === ind.sistema_id)) {
+      if (!naHora(ind.id, esc.id, ind.intervalo_seg)) { adiados++; continue }
       const k = `${ind.funcao}|${esc.id}`
       const atual = pares.get(k) ?? { funcao: ind.funcao, escopo: esc, itens: [] }
       atual.itens.push(ind)
@@ -108,5 +157,5 @@ Deno.serve(async (req) => {
     if (e2) resumo.push({ funcao: par.funcao, escopo: par.escopo.chave, gravacao: e2.message })
   }
 
-  return Response.json({ pares: pares.size, ms: Date.now() - inicio, resumo })
+  return Response.json({ quem, forcar, pares: pares.size, adiados, ms: Date.now() - inicio, resumo })
 })
