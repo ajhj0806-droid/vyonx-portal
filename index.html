@@ -14,7 +14,7 @@ button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus
 .room{position:absolute;inset:-30px;z-index:0;opacity:.8;background-image:url("sala.jpg");background-size:cover;background-position:center;filter:saturate(1.25)}
 .room:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#010713c7 0%,#010a1aa7 18%,#010b1a52 55%,#020816ad 100%),linear-gradient(0deg,#010614b8,transparent 43%,#00102388)}
 .app::after{content:"";position:absolute;z-index:1;inset:0;pointer-events:none;opacity:.11;background:repeating-linear-gradient(0deg,transparent 0,transparent 69px,#3ca4ff41 70px),repeating-linear-gradient(90deg,transparent 0,transparent 69px,#3ca4ff41 70px);mask-image:linear-gradient(0deg,#000 0,transparent 65%)}
-/* topo: IOT CITY + cidade à esquerda, Visitante / Cliente à direita */
+/* topo: IOT CITY + cidade à esquerda, Cliente à direita */
 .top{position:absolute;z-index:100;left:0;right:0;top:0;height:74px;display:flex;align-items:center;gap:18px;padding:0 22px 0 16px;background:linear-gradient(180deg,#020a1cf7,#041226e5);border-bottom:1px solid #1e628a66;box-shadow:0 15px 35px #0008}
 .brand{display:flex;align-items:center;gap:14px;min-width:0;white-space:nowrap;border:0;background:none;color:inherit;padding:0;text-align:left}
 .brand h1{margin:0;font-size:clamp(24px,2.4vw,34px);line-height:1;font-weight:880;letter-spacing:-.5px;text-shadow:0 4px 26px #0b8cc64f}.brand h1 span{background:linear-gradient(115deg,#2da0ff,#33e6ff);-webkit-background-clip:text;background-clip:text;color:transparent}
@@ -149,7 +149,7 @@ button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus
   <div class="top-right">
     <button type="button" class="top-btn" id="btnGrade" title="Ver em grade"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg><span class="lbl">Grade</span></button>
     <nav class="modos" aria-label="Modo de acesso">
-      <button type="button" class="modo-btn" id="btnVisitante"><svg viewBox="0 0 24 24"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></svg>Visitante</button>
+      
       <div class="conta"><button type="button" class="modo-btn" id="btnCliente"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-8 8-8s8 3.6 8 8"/></svg><span id="btnClienteTxt">Cliente</span></button>
         <div class="conta-menu" id="contaMenu"><div class="quem">Conectado como<b id="contaEmail"></b></div><button type="button" id="mSistemas">Meus sistemas</button><button type="button" id="mSenha">Alterar senha</button><a href="admin.html" id="mAdmin" hidden>Administração do portal</a><button type="button" id="mSair">Sair</button></div></div>
     </nav>
@@ -181,15 +181,14 @@ button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus
 <script src="icones.js"></script>
 <script>
 (()=>{'use strict';
-/* IOT CITY — três modos de entrada:
-   · apresentação: divulgação da plataforma (público)
-   · visitante: serviços abertos ao público da cidade configurada
+/* IOT CITY — duas entradas:
+   · abertura: divulgação da plataforma e serviços abertos ao público, tudo junto e sem login
    · cliente: login do portal → botões dos sistemas da cidade (cada sistema mantém o PRÓPRIO login)
    Quem vê o quê é decidido no banco (RLS): o navegador só recebe o que pode mostrar. */
 const $=id=>document.getElementById(id);
 const SB=window.supabase?window.supabase.createClient(IOT_SUPA.url,IOT_SUPA.key,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}}):null;
 let CFG={titulo:'IOT CITY',marca_sub:'SMART CITIES PLATFORM',eyebrow:'',legenda:'',menu_lateral:'oculto',rotacao_auto:true,velocidade:1,ampliacao:1.3,mostrar_kpis:true,kpis:[],rodape:'',
-  cidade_nome:'',cidade_lat:null,cidade_lon:null,mostrar_alfinete:true,visitante_texto:'',mkt_titulo:'A Plataforma para controlar os dispositivos e sistemas na sua cidade e empresa.',mkt_destaque:'Tudo em um só portal.',
+  cidade_nome:'',cidade_lat:null,cidade_lon:null,mostrar_alfinete:true,mkt_titulo:'A Plataforma para controlar os dispositivos e sistemas na sua cidade e empresa.',mkt_destaque:'Tudo em um só portal.',
   mkt_itens:['Controle','Organização','Apresentação','Personalização'],mkt_cta:'CONTRATE AGORA',mkt_nota:'Simples de configurar.',contato_whatsapp:null,contato_email:null,contato_mensagem:''};
 let TODOS=[],APPS=[],MODO='apresentacao',PAPEL=null,SESSAO=null,FALHOU=false;
 const stage=$('stage'),container=$('cards'),dots=$('dots'),search=$('search'),appEl=$('app');
@@ -247,7 +246,7 @@ function montar(){
   });
   dotnodes=[...dots.children];
   const v=$('vazio'); v.style.display=APPS.length?'none':'block';
-  v.textContent=FALHOU?'Não foi possível carregar o portal agora. Tente novamente em instantes.':{apresentacao:'Nenhum destaque configurado ainda.',visitante:'Nenhum serviço aberto ao público ainda.',cliente:'Nenhum sistema configurado ainda.'}[MODO];
+  v.textContent=FALHOU?'Não foi possível carregar o portal agora. Tente novamente em instantes.':{apresentacao:'Nada configurado para a abertura ainda.',cliente:'Nenhum sistema configurado ainda.'}[MODO];
   $('prev').style.display=$('next').style.display=APPS.length>1?'':'none';
 }
 /* gira a órbita até o cartão e o destaca (sincronização menu lateral → órbita) */
@@ -338,12 +337,12 @@ function filtrar(){ APPS=TODOS.filter(a=>(a.modos||['cliente']).includes(MODO));
 function trocarModo(m){
   if(m==='cliente'&&!PAPEL) return telaLogin();
   MODO=m; try{ sessionStorage.setItem('iotcity-modo',m); }catch(_){}
-  appEl.classList.remove('modo-apresentacao','modo-visitante','modo-cliente'); appEl.classList.add('modo-'+m);
+  appEl.classList.remove('modo-apresentacao','modo-cliente'); appEl.classList.add('modo-'+m);
   appEl.classList.toggle('com-cidade',m!=='apresentacao'&&!!CFG.cidade_nome);
-  $('btnVisitante').classList.toggle('on',m==='visitante'); $('btnCliente').classList.toggle('on',m==='cliente');
-  $('sideTit').textContent={apresentacao:'DESTAQUES',visitante:'SERVIÇOS ABERTOS',cliente:'SISTEMAS'}[m];
-  $('gradeTit').textContent={apresentacao:'Destaques da plataforma',visitante:'Serviços abertos ao público',cliente:'Sistemas da '+(CFG.cidade_nome||'cidade')}[m];
-  search.value=''; search.placeholder=m==='visitante'?'Buscar serviço…':'Buscar sistema…';
+  $('btnCliente').classList.toggle('on',m==='cliente');
+  $('sideTit').textContent={apresentacao:'DESTAQUES',cliente:'SISTEMAS'}[m];
+  $('gradeTit').textContent={apresentacao:'Destaques da plataforma',cliente:'Sistemas da '+(CFG.cidade_nome||'cidade')}[m];
+  search.value=''; search.placeholder='Buscar…';
   filtrar(); montar(); cabecalho(); fecharGrade(); angle=initialAngle; alvo=null;
 }
 function cabecalho(){
@@ -354,18 +353,16 @@ function cabecalho(){
       ((CFG.mkt_itens||[]).length?'<ul>'+CFG.mkt_itens.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul>':'')+
       '<div class="cta-linha"><button type="button" class="cta" id="cta">'+esc(CFG.mkt_cta||'CONTRATE AGORA')+'</button>'+(CFG.mkt_nota?'<span class="nota">'+esc(CFG.mkt_nota)+'</span>':'')+'</div></div>';
     $('cta').onclick=contratar;
-  } else if(MODO==='visitante'){
-    h.innerHTML='<div class="eyebrow">VISITANTE · SERVIÇOS ABERTOS AO PÚBLICO</div><p class="caption"></p>'; h.querySelector('.caption').textContent=CFG.visitante_texto||'';
   } else {
     h.innerHTML='<div class="eyebrow"></div><p class="caption"></p>'; h.firstChild.textContent=CFG.eyebrow||'ÁREA DO CLIENTE'; h.querySelector('.caption').textContent=CFG.legenda||'';
   }
   const k=$('kpis'); k.innerHTML='';
   if(CFG.mostrar_kpis&&MODO!=='apresentacao'){ const n=APPS.filter(a=>a.exibicao==='visivel').length;
-    const lista=[...(n?[{v:String(n).padStart(2,'0'),l:MODO==='visitante'?'Serviços disponíveis':'Sistemas disponíveis'}]:[]),...(Array.isArray(CFG.kpis)?CFG.kpis:[])];
+    const lista=[...(n?[{v:String(n).padStart(2,'0'),l:'Sistemas disponíveis'}]:[]),...(Array.isArray(CFG.kpis)?CFG.kpis:[])];
     lista.slice(0,3).forEach(x=>{ const d=document.createElement('div'); d.className='kpi'; d.innerHTML='<div class="kvalue"></div><div class="klabel"></div>'; d.firstChild.textContent=x.v||''; d.lastChild.textContent=x.l||''; k.appendChild(d); }); }
 }
 $('brand').addEventListener('click',()=>trocarModo('apresentacao'));
-$('btnVisitante').addEventListener('click',()=>trocarModo(MODO==='visitante'?'apresentacao':'visitante'));
+
 $('btnCliente').addEventListener('click',e=>{ e.stopPropagation(); if(!PAPEL) return telaLogin(); if(MODO!=='cliente') return trocarModo('cliente'); $('contaMenu').classList.toggle('aberto'); });
 document.addEventListener('click',e=>{ if(!e.target.closest('.conta')) $('contaMenu').classList.remove('aberto'); });
 $('mSistemas').onclick=()=>{ $('contaMenu').classList.remove('aberto'); trocarModo('cliente'); };
@@ -433,7 +430,7 @@ async function carregar(){
   try{ await lerSessao(); }catch(_){}
   await carregar();
   let m='apresentacao'; try{ m=sessionStorage.getItem('iotcity-modo')||m; }catch(_){}
-  if(location.hash==='#cliente') m='cliente'; else if(location.hash==='#visitante') m='visitante';
+  if(location.hash==='#cliente') m='cliente'; else if(m!=='cliente') m='apresentacao';
   // logado volta para a área do cliente; sem login, #cliente abre a caixa de login sobre a apresentação
   if(m==='cliente'&&!PAPEL){ trocarModo('apresentacao'); if(location.hash==='#cliente') telaLogin(); }
   else trocarModo(m);

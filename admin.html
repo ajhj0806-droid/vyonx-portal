@@ -24,7 +24,7 @@ a{color:var(--cyan)}
 table{width:100%;border-collapse:collapse;font-size:13px}th{text-align:left;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px;border-bottom:1px solid var(--line)}td{padding:8px;border-bottom:1px solid #12354f;vertical-align:middle}
 tr.sel td{background:#0b2d4b}
 .ico{width:34px;height:34px;display:grid;place-items:center;border:1px solid #25b9ff62;border-radius:9px;background:#062c4ec9;color:#46dfff}.ico svg,.ip svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
-.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;margin:1px 2px 1px 0}.chip.apresentacao{background:#13284f;color:#8fb8ff}.chip.visitante{background:#0f3a3d;color:#6fe6dc}.chip.cliente{background:#2b2147;color:#c5a8ff}.chip.admin{background:#3b2a0d;color:#ffc861}.chip.off{background:#2a2f36;color:#a3b0bb}
+.chip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;margin:1px 2px 1px 0}.chip.apresentacao{background:#13284f;color:#8fb8ff}.chip.cliente{background:#2b2147;color:#c5a8ff}.chip.admin{background:#3b2a0d;color:#ffc861}.chip.off{background:#2a2f36;color:#a3b0bb}
 .mut{color:var(--muted);font-size:12px}.url{font-family:ui-monospace,Consolas,monospace;font-size:11.5px;color:#9ccbe6;word-break:break-all}
 .ordem{display:flex;gap:3px}.ordem button{width:26px;height:26px;border-radius:6px;border:1px solid var(--line);background:#03152a;font-size:12px}
 .icones{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px}.ip{height:44px;border-radius:9px;border:1px solid var(--line);background:#03152a;color:#7fc4e4;display:grid;place-items:center}.ip.on{border-color:var(--cyan);color:#e4ffff;background:#076fa5}
@@ -51,7 +51,7 @@ const SB=window.supabase.createClient(IOT_SUPA.url,IOT_SUPA.key,{auth:{persistSe
 const R=document.getElementById('raiz');
 const esc=s=>(s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const EXIB={visivel:'Visível',bloqueado:'Bloqueado (cadeado)',oculto:'Oculto'};
-const MODOS={apresentacao:'Apresentação',visitante:'Visitante',cliente:'Cliente'};
+const MODOS={apresentacao:'Abertura',cliente:'Cliente'};
 let APPS=[],CFG=null,USUARIOS=[],EDIT=null,USER=null,ABA='botoes',FILTRO='';
 try{ ABA=sessionStorage.getItem('iotcity-adm-aba')||ABA; }catch(_){}
 function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(t._h);t._h=setTimeout(()=>t.className='toast',2800);}
@@ -132,9 +132,8 @@ function render(){
 /* ---------- botões ---------- */
 function abaBotoes(box){
   const lista=FILTRO?APPS.filter(a=>(a.modos||[]).includes(FILTRO)):APPS;
-  box.innerHTML=`<div class="card"><div style="display:flex;align-items:center;gap:10px"><div><h2>Botões</h2><p class="desc">Cada botão aparece em um ou mais modos do portal:
-     <span class="chip apresentacao">Apresentação</span> divulgação para todos (sem endereço, o clique mostra o "saiba mais" e o botão de contratar) ·
-     <span class="chip visitante">Visitante</span> serviços abertos ao público da cidade ·
+  box.innerHTML=`<div class="card"><div style="display:flex;align-items:center;gap:10px"><div><h2>Botões</h2><p class="desc">Cada botão aparece na abertura, na área do cliente, ou nas duas:
+     <span class="chip apresentacao">Abertura</span> o que todo mundo vê sem login — divulgação e serviços abertos ao público ·
      <span class="chip cliente">Cliente</span> só depois do login do portal.<br>
      <b>Visível</b>: abre o endereço · <b>Bloqueado</b>: aparece com cadeado e mostra a mensagem · <b>Oculto</b>: não aparece.</p></div><div class="grow"></div><button class="btn pri" id="novo">+ Novo botão</button></div>
    <div class="filtro"><button data-f="" class="${FILTRO?'':'on'}">Todos (${APPS.length})</button>${Object.entries(MODOS).map(([k,l])=>`<button data-f="${k}" class="${FILTRO===k?'on':''}">${l} (${APPS.filter(a=>(a.modos||[]).includes(k)).length})</button>`).join('')}</div>
@@ -202,15 +201,13 @@ function editor(){
 /* ---------- cidade ---------- */
 function abaCidade(box){
   const c=CFG;
-  box.innerHTML=`<div class="card"><h2>Cidade (ou empresa) do portal</h2><p class="desc">O nome aparece ao lado de IOT CITY nos modos Visitante e Cliente.</p>
+  box.innerHTML=`<div class="card"><h2>Cidade (ou empresa) do portal</h2><p class="desc">O nome aparece ao lado de IOT CITY na área do cliente.</p>
    <form id="fc" class="form">
     <label class="f full">Nome exibido<input class="field" name="cidade_nome" value="${esc(c.cidade_nome)}" maxlength="40" placeholder="SÃO PAULO - SP"></label>
-    <label class="f full">Texto do modo Visitante<textarea class="field" name="visitante_texto" maxlength="300">${esc(c.visitante_texto)}</textarea></label>
-    <div class="full hint">Os serviços abertos ao público são os botões marcados como <span class="chip visitante">Visitante</span> na aba Botões.</div>
     <div class="full" style="display:flex;justify-content:flex-end"><button class="btn pri" type="submit">Salvar cidade</button></div></form></div>`;
   const f=box.querySelector('#fc');
   f.onsubmit=async e=>{ e.preventDefault();
-    await salvarCfg({cidade_nome:f.cidade_nome.value.trim()||null,visitante_texto:f.visitante_texto.value.trim()||null},'Cidade salva');
+    await salvarCfg({cidade_nome:f.cidade_nome.value.trim()||null},'Cidade salva');
     render(); };
 }
 
@@ -285,7 +282,7 @@ function abaAparencia(box){
     <label class="f">Velocidade da rotação: <b id="vv">${Number(c.velocidade).toFixed(1)}×</b><input type="range" name="velocidade" min="0.2" max="4" step="0.1" value="${c.velocidade}"></label>
     <label class="f">Ampliação no mouse over: <b id="va">${Math.round((c.ampliacao-1)*100)}%</b><input type="range" name="ampliacao" min="1" max="1.8" step="0.05" value="${c.ampliacao}"></label>
     <div class="f" style="justify-content:flex-end;gap:8px"><label class="chk"><input type="checkbox" name="rotacao_auto" ${c.rotacao_auto?'checked':''}> Rotação automática</label>
-     <label class="chk"><input type="checkbox" name="mostrar_kpis" ${c.mostrar_kpis?'checked':''}> Mostrar indicadores no topo (visitante e cliente)</label></div>
+     <label class="chk"><input type="checkbox" name="mostrar_kpis" ${c.mostrar_kpis?'checked':''}> Mostrar indicadores no topo (área do cliente)</label></div>
     ${[0,1].map(i=>{const k=(c.kpis||[])[i]||{};return `<label class="f">Indicador ${i+2} — valor / rótulo<span style="display:flex;gap:6px"><input class="field" name="kv${i}" value="${esc(k.v)}" style="width:40%" maxlength="14"><input class="field" name="kl${i}" value="${esc(k.l)}" style="flex:1" maxlength="30"></span></label>`}).join('')}
     <div class="full hint">O 1º indicador é automático: quantidade de botões visíveis no modo atual.</div>
     <div class="full" style="display:flex;justify-content:flex-end"><button class="btn pri" type="submit">Salvar aparência</button></div>
