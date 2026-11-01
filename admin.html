@@ -52,7 +52,13 @@ const R=document.getElementById('raiz');
 const esc=s=>(s==null?'':String(s)).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const EXIB={visivel:'Visível',bloqueado:'Bloqueado (cadeado)',oculto:'Oculto'};
 const MODOS={apresentacao:'Abertura',cliente:'Cliente'};
+/* IDG — as mesmas palavras da tela do cliente, para quem cadastra ver o que o cliente verá */
+const ESPECIE={indicador:'Indicador (tem nota)',informacao:'Informação (sem nota)'};
+const SENTIDO={maior_melhor:'Quanto maior, melhor',menor_melhor:'Quanto menor, melhor',faixa_ideal:'Melhor perto de um centro'};
+const FAIXA={verde:'Saudável',amarelo:'Atenção',laranja:'Risco',vermelho:'Crítico',cinza:'Sem dado',neutro:'Informação'};
+const CORF={verde:'#2fe3a2',amarelo:'#ffd24a',laranja:'#ff9333',vermelho:'#ff4f6a',cinza:'#7f9db2',neutro:'#49c8ee'};
 let APPS=[],CFG=null,USUARIOS=[],EDIT=null,USER=null,ABA='botoes',FILTRO='';
+let SIST=[],ESCOP=[],INDIC=[],CONEC=[],IDGSIS=null,EDITS=null,EDITE=null,EDITI=null;
 try{ ABA=sessionStorage.getItem('iotcity-adm-aba')||ABA; }catch(_){}
 function toast(m,err){const t=document.getElementById('toast');t.textContent=m;t.className='toast show'+(err?' err':'');clearTimeout(t._h);t._h=setTimeout(()=>t.className='toast',2800);}
 const urlOk=u=>!u||/^https?:\/\/[a-z0-9.-]+(:\d{1,5})?([/?#].*)?$/i.test(u)||/^\/(?!\/)/.test(u);
@@ -111,22 +117,26 @@ function telaSemAcesso(){
   document.getElementById('sair').onclick=async()=>{await SB.auth.signOut();telaLogin();};
 }
 async function carregar(){
-  const [a,c,u]=await Promise.all([SB.from('portal_app').select('*').order('ordem').order('id'),SB.from('portal_config').select('*').eq('id',1).maybeSingle(),
-    SB.from('portal_usuario').select('*').order('papel').order('email')]);
+  const [a,c,u,s,e,i,k]=await Promise.all([SB.from('portal_app').select('*').order('ordem').order('id'),SB.from('portal_config').select('*').eq('id',1).maybeSingle(),
+    SB.from('portal_usuario').select('*').order('papel').order('email'),
+    SB.from('idg_sistema').select('*').order('ordem'),SB.from('idg_escopo').select('*').order('ordem'),
+    SB.from('idg_indicador').select('*').order('ordem'),SB.from('idg_conector').select('*').order('nome')]);
   if(a.error) toast(a.error.message,true); APPS=a.data||[]; CFG=c.data||{}; USUARIOS=u.data||[];
+  SIST=s.data||[]; ESCOP=e.data||[]; INDIC=i.data||[]; CONEC=k.data||[];
+  if(!SIST.some(x=>x.id===IDGSIS)) IDGSIS=SIST.length?SIST[0].id:null;
 }
 async function salvarCfg(row,msg){
   const {error}=await SB.from('portal_config').update({...row,atualizado_em:new Date().toISOString()}).eq('id',1);
   if(error){ toast(error.message,true); return false; } await carregar(); toast(msg||'Salvo — atualize o portal para ver'); return true; }
 
 function render(){
-  const abas=[['botoes','Botões'],['cidade','Cidade'],['apresentacao','Apresentação e contato'],['usuarios','Usuários'],['aparencia','Aparência']];
+  const abas=[['botoes','Botões'],['idg','IDG'],['cidade','Cidade'],['apresentacao','Apresentação e contato'],['usuarios','Usuários'],['aparencia','Aparência']];
   R.innerHTML=`<header class="top"><div class="vmark">V</div><h1>IOT CITY · Administração<small>Cada sistema mantém o próprio login; o login do portal só mostra os botões de cliente.</small></h1><div class="grow"></div>
    <span class="mut">${esc(USER.email)}</span><a class="btn" href="./" target="_blank" rel="noopener">↗ Ver portal</a><button class="btn" id="sair">Sair</button></header>
    <div class="wrap"><nav class="abas">${abas.map(([k,l])=>`<button class="aba ${ABA===k?'on':''}" data-aba="${k}">${l}</button>`).join('')}</nav><div id="corpo"></div></div>`;
   R.querySelector('#sair').onclick=async()=>{await SB.auth.signOut();telaLogin();};
-  R.querySelectorAll('[data-aba]').forEach(b=>b.onclick=()=>{ABA=b.dataset.aba;EDIT=null;try{sessionStorage.setItem('iotcity-adm-aba',ABA)}catch(_){}render();});
-  ({botoes:abaBotoes,cidade:abaCidade,apresentacao:abaApresentacao,usuarios:abaUsuarios,aparencia:abaAparencia}[ABA]||abaBotoes)(R.querySelector('#corpo'));
+  R.querySelectorAll('[data-aba]').forEach(b=>b.onclick=()=>{ABA=b.dataset.aba;EDIT=EDITS=EDITE=EDITI=null;try{sessionStorage.setItem('iotcity-adm-aba',ABA)}catch(_){}render();});
+  ({botoes:abaBotoes,idg:abaIDG,cidade:abaCidade,apresentacao:abaApresentacao,usuarios:abaUsuarios,aparencia:abaAparencia}[ABA]||abaBotoes)(R.querySelector('#corpo'));
 }
 
 /* ---------- botões ---------- */
@@ -195,6 +205,271 @@ function editor(){
     const r=e.id?await SB.from('portal_app').update(row).eq('id',e.id):await SB.from('portal_app').insert(row);
     if(r.error){er.innerHTML='<div class="msg err">'+esc(r.error.message)+'</div>';return;}
     EDIT=null;await carregar();render();toast('Botão salvo — já aparece no portal');};
+  box.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ---------- IDG ---------- */
+/* Nada de matemática aqui: a prévia da nota chama idg_simular, que é a mesma
+   idg_normalizar/idg_estado do gatilho. Repetir a fórmula no navegador criaria
+   uma segunda versão da conta. */
+const nfmt=(v,d)=>v==null||v===''?'—':Number(v).toLocaleString('pt-BR',{minimumFractionDigits:d||0,maximumFractionDigits:d||0});
+const nn=v=>(v===''||v==null)?null:Number(String(v).replace(',','.'));
+const slug=s=>(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,40);
+const calibResumo=i=>i.especie==='informacao'?'<span class="mut">sem nota</span>'
+  :i.sentido==='faixa_ideal'?`centro ${nfmt(i.nominal,1)} · bordas ${nfmt(i.critico_baixo,1)} e ${nfmt(i.critico_alto,1)}`
+  :`alvo ${nfmt(i.nominal,1)} · crítico ${nfmt(i.critico,1)}`;
+
+function abaIDG(box){
+  const s=SIST.find(x=>x.id===IDGSIS)||null;
+  const escs=s?ESCOP.filter(e=>e.sistema_id===s.id):[];
+  const inds=s?INDIC.filter(i=>i.sistema_id===s.id):[];
+  const dentro=inds.filter(i=>i.ativo&&i.especie==='indicador'&&i.no_idg&&Number(i.peso)>0);
+  const soma=dentro.reduce((a,b)=>a+Number(b.peso),0);
+  const rotulo=s?(s.escopo_rotulo||'Escopo'):'Escopo';
+
+  box.innerHTML=`<div class="card"><div style="display:flex;align-items:flex-start;gap:10px;flex-wrap:wrap">
+    <div><h2>IDG — Índice de Desempenho Geral</h2><p class="desc">
+     Um <b>sistema monitorado</b> (o Raio-X, por exemplo) tem um índice calculado por <b>escopo</b> — o cliente, a cidade, o parque.
+     Cada <b>indicador</b> é um cartão na tela do cliente. Quem tem nota entra na conta; o resto aparece só para explicar de onde o número vem.<br>
+     A coleta roda no servidor e grava o valor cru; quem transforma em nota é o banco. Aqui se define <i>a régua</i>, não a conta.</p></div>
+    <div class="grow"></div><div style="display:flex;gap:8px"><a class="btn" href="audit.html" target="_blank" rel="noopener">↗ Ver a tela do IDG</a><button class="btn pri" id="novoSis">+ Novo sistema</button></div></div>
+    ${SIST.length?`<div class="filtro">${SIST.map(x=>`<button data-sis="${x.id}" class="${x.id===IDGSIS?'on':''}">${esc(x.nome)}${x.ativo?'':' · inativo'}</button>`).join('')}</div>`:'<div class="msg">Nenhum sistema monitorado ainda. Crie o primeiro para começar.</div>'}
+    ${s?`<table><tbody><tr><td style="width:120px" class="mut">Chave</td><td><span class="url">${esc(s.chave)}</span></td>
+      <td style="width:120px" class="mut">Rótulo do escopo</td><td>${esc(s.escopo_rotulo||'Escopo')}</td>
+      <td style="width:90px" class="mut">Ordem</td><td>${esc(s.ordem)}</td>
+      <td style="white-space:nowrap"><button class="btn sm" id="edSis">Editar</button> <button class="btn sm perigo" id="delSis">Excluir</button></td></tr>
+      ${s.descricao?`<tr><td class="mut">Descrição</td><td colspan="6">${esc(s.descricao)}</td></tr>`:''}</tbody></table>`:''}
+   </div>
+   <div id="edIDG"></div>
+   ${s?`<div class="card"><div style="display:flex;align-items:center;gap:10px"><div><h2>Escopos — um por ${esc(rotulo.toLowerCase())}</h2>
+     <p class="desc">A <b>chave</b> é como a fonte identifica este escopo — no conector do Raio-X, é o código do cliente lá (ex.: <b>25</b>). Errar a chave faz a coleta voltar vazia.</p></div>
+     <div class="grow"></div><button class="btn pri" id="novoEsc">+ Incluir escopo</button></div>
+    <table><thead><tr><th>Chave</th><th>Nome</th><th>Ordem</th><th>Ativo</th><th></th></tr></thead><tbody>
+    ${escs.map(e=>`<tr class="${EDITE&&EDITE.id===e.id?'sel':''}"><td><span class="url">${esc(e.chave)}</span></td><td><b>${esc(e.nome)}</b></td><td>${esc(e.ordem)}</td>
+      <td>${e.ativo?'Sim':'<span class="mut">Não</span>'}</td>
+      <td style="white-space:nowrap"><button class="btn sm" data-ede="${e.id}">Editar</button> <button class="btn sm perigo" data-dele="${e.id}">Excluir</button></td></tr>`).join('')
+      ||'<tr><td colspan="5" class="mut">Nenhum escopo cadastrado — sem isso a coleta não tem a quem perguntar.</td></tr>'}
+    </tbody></table></div>
+
+   <div class="card"><div style="display:flex;align-items:center;gap:10px"><div><h2>Indicadores</h2>
+     <p class="desc">Só entram na conta os marcados com peso maior que zero. <b>Dois indicadores que medem o mesmo fato contam esse fato duas vezes</b> — se um já é a média dos outros, deixe os outros fora da conta.</p></div>
+     <div class="grow"></div><button class="btn pri" id="novoInd">+ Novo indicador</button></div>
+    ${inds.length&&!dentro.length?'<div class="msg err">Nenhum indicador participa da conta: o índice deste sistema fica sem número.</div>':''}
+    <table><thead><tr><th>Ordem</th><th></th><th>Indicador</th><th>Espécie</th><th>Fonte</th><th>Calibração</th><th>No índice</th><th>Ativo</th><th></th></tr></thead><tbody>
+    ${inds.map((i,k)=>`<tr class="${EDITI&&EDITI.id===i.id?'sel':''}"><td><div class="ordem"><button title="Subir" data-iup="${k}" ${k?'':'disabled'}>▲</button><button title="Descer" data-idn="${k}" ${k<inds.length-1?'':'disabled'}>▼</button></div></td>
+      <td><div class="ico">${iotIcone(i.icone)}</div></td>
+      <td><b>${esc(i.nome)}</b><div class="mut"><span class="url">${esc(i.chave)}</span>${i.unidade?' · '+esc(i.unidade):''}</div></td>
+      <td>${i.especie==='informacao'?'<span class="mut">Informação</span>':esc(SENTIDO[i.sentido]||'—')}</td>
+      <td><div class="mut">${esc(i.funcao)}</div>${(i.parametros&&i.parametros.metrica)?`<span class="url">${esc(i.parametros.metrica)}</span>`:`<span class="url">${esc(i.chave)}</span>`}</td>
+      <td class="mut">${calibResumo(i)}</td>
+      <td>${(i.no_idg&&Number(i.peso)>0&&i.especie==='indicador')?`<b>${soma?nfmt(100*Number(i.peso)/soma,0):'—'}%</b><div class="mut">peso ${esc(i.peso)}</div>`:'<span class="mut">fora</span>'}</td>
+      <td>${i.ativo?'Sim':'<span class="mut">Não</span>'}</td>
+      <td style="white-space:nowrap"><button class="btn sm" data-edi="${i.id}">Editar</button> <button class="btn sm perigo" data-deli="${i.id}">Excluir</button></td></tr>`).join('')
+      ||'<tr><td colspan="9" class="mut">Nenhum indicador cadastrado.</td></tr>'}
+    </tbody></table></div><div id="edInd"></div>`:''}`;
+
+  const $=x=>box.querySelector(x);
+  box.querySelectorAll('[data-sis]').forEach(b=>b.onclick=()=>{IDGSIS=b.dataset.sis;EDITS=EDITE=EDITI=null;render();});
+  $('#novoSis').onclick=()=>{EDITS={chave:'',nome:'',descricao:'',escopo_rotulo:'Cliente',ordem:(SIST.length?Math.max(...SIST.map(x=>x.ordem||0)):0)+1,ativo:true};EDITE=EDITI=null;render();};
+  if($('#edSis')) $('#edSis').onclick=()=>{EDITS={...s};EDITE=EDITI=null;render();};
+  if($('#delSis')) $('#delSis').onclick=async()=>{
+    if(!confirm(`Excluir o sistema "${s.nome}"?\n\nIsso apaga junto ${escs.length} escopo(s), ${inds.length} indicador(es) e TODAS as medições já coletadas. Não há como desfazer.`))return;
+    const {error}=await SB.from('idg_sistema').delete().eq('id',s.id);
+    if(error)return toast(error.message,true); IDGSIS=null;await carregar();render();toast('Sistema excluído'); };
+  if($('#novoEsc')) $('#novoEsc').onclick=()=>{EDITE={sistema_id:s.id,chave:'',nome:'',ordem:(escs.length?Math.max(...escs.map(x=>x.ordem||0)):0)+1,ativo:true};EDITS=EDITI=null;render();};
+  box.querySelectorAll('[data-ede]').forEach(b=>b.onclick=()=>{EDITE={...ESCOP.find(x=>x.id===b.dataset.ede)};EDITS=EDITI=null;render();});
+  box.querySelectorAll('[data-dele]').forEach(b=>b.onclick=async()=>{const e=ESCOP.find(x=>x.id===b.dataset.dele);
+    if(!confirm(`Excluir "${e.nome}"? As medições já coletadas para ele também somem.`))return;
+    const {error}=await SB.from('idg_escopo').delete().eq('id',e.id);
+    if(error)return toast(error.message,true);await carregar();EDITE=null;render();toast('Excluído');});
+  if($('#novoInd')) $('#novoInd').onclick=()=>{EDITI={sistema_id:s.id,chave:'',nome:'',descricao:'',observacao:'',icone:'bi',especie:'indicador',
+    unidade:'',decimais:1,sentido:'maior_melhor',nominal:100,critico:0,critico_baixo:'',critico_alto:'',
+    faixa_verde:90,faixa_amarelo:75,faixa_laranja:50,peso:1,no_idg:true,funcao:(CONEC[0]&&CONEC[0].chave)||'',parametros:{},
+    intervalo_seg:3600,validade_seg:86400,ordem:(inds.length?Math.max(...inds.map(x=>x.ordem||0)):0)+1,ativo:true};EDITS=EDITE=null;render();};
+  box.querySelectorAll('[data-edi]').forEach(b=>b.onclick=()=>{EDITI={...INDIC.find(x=>x.id===b.dataset.edi)};EDITS=EDITE=null;render();});
+  box.querySelectorAll('[data-deli]').forEach(b=>b.onclick=async()=>{const i=INDIC.find(x=>x.id===b.dataset.deli);
+    if(!confirm(`Excluir o indicador "${i.nome}"? O histórico de medições dele também some.`))return;
+    const {error}=await SB.from('idg_indicador').delete().eq('id',i.id);
+    if(error)return toast(error.message,true);await carregar();EDITI=null;render();toast('Indicador excluído');});
+  const trocaInd=async(a,b)=>{const x=inds[a],y=inds[b],ox=x.ordem,oy=y.ordem===ox?ox+1:y.ordem;
+    const r1=await SB.from('idg_indicador').update({ordem:oy}).eq('id',x.id),r2=await SB.from('idg_indicador').update({ordem:ox}).eq('id',y.id);
+    if(r1.error||r2.error)return toast((r1.error||r2.error).message,true);await carregar();render();};
+  box.querySelectorAll('[data-iup]').forEach(b=>b.onclick=()=>trocaInd(+b.dataset.iup,+b.dataset.iup-1));
+  box.querySelectorAll('[data-idn]').forEach(b=>b.onclick=()=>trocaInd(+b.dataset.idn,+b.dataset.idn+1));
+
+  if(EDITS) editorSistema(); else if(EDITE) editorEscopo();
+  if(EDITI) editorIndicador();
+}
+
+function editorSistema(){
+  const box=R.querySelector('#edIDG'),e=EDITS; if(!box) return;
+  box.innerHTML=`<div class="card"><h2>${e.id?'Editar sistema':'Novo sistema monitorado'}</h2>
+   <p class="desc">A <b>chave</b> é o nome interno, usado pela coleta; não muda depois de criada.</p>
+   <form id="fs" class="form">
+    <label class="f">Nome *<input class="field" name="nome" value="${esc(e.nome)}" maxlength="60" required></label>
+    <label class="f">Chave *<input class="field" name="chave" value="${esc(e.chave)}" maxlength="40" ${e.id?'disabled':''} placeholder="raiox"></label>
+    <label class="f full">Descrição<input class="field" name="descricao" value="${esc(e.descricao||'')}" maxlength="160"></label>
+    <label class="f">Como chamar o escopo<input class="field" name="escopo_rotulo" value="${esc(e.escopo_rotulo||'Cliente')}" maxlength="20" placeholder="Cliente · Cidade · Parque"></label>
+    <label class="f">Ordem<input class="field" name="ordem" type="number" value="${esc(e.ordem)}"></label>
+    <label class="f"><span>Ativo</span><select class="field" name="ativo"><option value="1" ${e.ativo?'selected':''}>Sim</option><option value="0" ${e.ativo?'':'selected'}>Não — some da tela do cliente</option></select></label>
+    <div class="full" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn" id="cs">Cancelar</button><button class="btn pri" type="submit">Salvar sistema</button></div>
+    <div id="es" class="full"></div></form></div>`;
+  const f=box.querySelector('#fs');
+  if(!e.id) f.nome.oninput=()=>{ if(!f.chave.dataset.tocado) f.chave.value=slug(f.nome.value); };
+  if(!e.id) f.chave.oninput=()=>{ f.chave.dataset.tocado='1'; };
+  box.querySelector('#cs').onclick=()=>{EDITS=null;render();};
+  f.onsubmit=async ev=>{ ev.preventDefault(); const er=box.querySelector('#es');
+    const row={nome:f.nome.value.trim(),descricao:f.descricao.value.trim()||null,escopo_rotulo:f.escopo_rotulo.value.trim()||'Cliente',
+      ordem:parseInt(f.ordem.value,10)||0,ativo:f.ativo.value==='1'};
+    if(!e.id) row.chave=slug(f.chave.value);
+    if(!row.nome||(!e.id&&!row.chave)){er.innerHTML='<div class="msg err">Nome e chave são obrigatórios.</div>';return;}
+    const r=e.id?await SB.from('idg_sistema').update(row).eq('id',e.id):await SB.from('idg_sistema').insert(row).select().single();
+    if(r.error){er.innerHTML='<div class="msg err">'+esc(/duplicate|unique/i.test(r.error.message)?'Já existe um sistema com esta chave.':r.error.message)+'</div>';return;}
+    if(r.data&&r.data.id) IDGSIS=r.data.id;
+    EDITS=null;await carregar();render();toast('Sistema salvo'); };
+  box.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function editorEscopo(){
+  const box=R.querySelector('#edIDG'),e=EDITE; if(!box) return;
+  /* "escopo" em vez do rótulo do usuário: gênero e plural de palavra digitada
+     não dá para adivinhar, e "Novo cidade" é pior do que uma palavra técnica */
+  const s=SIST.find(x=>x.id===e.sistema_id)||{}, rot=s.escopo_rotulo||'Escopo';
+  box.innerHTML=`<div class="card"><h2>${e.id?'Editar escopo':'Novo escopo'} <span class="mut" style="font-weight:400">(${esc(rot.toLowerCase())})</span></h2>
+   <p class="desc">A <b>chave</b> precisa ser exatamente o código que a fonte usa. No conector do Raio-X é o código do cliente lá (ex.: <b>25</b> = FM Rodrigues).
+   Se não bater, a coleta devolve vazio e o cartão fica cinza — e cinza aqui quer dizer "sem dado", não "tudo bem".</p>
+   <form id="fe2" class="form">
+    <label class="f">Nome *<input class="field" name="nome" value="${esc(e.nome)}" maxlength="80" required></label>
+    <label class="f">Chave na fonte *<input class="field" name="chave" value="${esc(e.chave)}" maxlength="40" required placeholder="25"></label>
+    <label class="f">Ordem<input class="field" name="ordem" type="number" value="${esc(e.ordem)}"></label>
+    <label class="f"><span>Ativo</span><select class="field" name="ativo"><option value="1" ${e.ativo?'selected':''}>Sim</option><option value="0" ${e.ativo?'':'selected'}>Não</option></select></label>
+    <div class="full" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn" id="ce">Cancelar</button><button class="btn pri" type="submit">Salvar</button></div>
+    <div id="ee" class="full"></div></form></div>`;
+  const f=box.querySelector('#fe2');
+  box.querySelector('#ce').onclick=()=>{EDITE=null;render();};
+  f.onsubmit=async ev=>{ ev.preventDefault(); const er=box.querySelector('#ee');
+    const row={sistema_id:e.sistema_id,nome:f.nome.value.trim(),chave:f.chave.value.trim(),ordem:parseInt(f.ordem.value,10)||0,ativo:f.ativo.value==='1'};
+    if(!row.nome||!row.chave){er.innerHTML='<div class="msg err">Nome e chave são obrigatórios.</div>';return;}
+    const r=e.id?await SB.from('idg_escopo').update(row).eq('id',e.id):await SB.from('idg_escopo').insert(row);
+    if(r.error){er.innerHTML='<div class="msg err">'+esc(/duplicate|unique/i.test(r.error.message)?'Já existe um escopo com esta chave neste sistema.':r.error.message)+'</div>';return;}
+    EDITE=null;await carregar();render();toast('Salvo'); };
+  box.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function editorIndicador(){
+  const box=R.querySelector('#edInd'),e=EDITI; if(!box) return;
+  const con=CONEC.find(c=>c.chave===e.funcao)||CONEC[0]||{metricas:[]};
+  const metricaAtual=(e.parametros&&e.parametros.metrica)||'';
+  box.innerHTML=`<div class="card"><h2>${e.id?'Editar indicador':'Novo indicador'}</h2>
+   <p class="desc"><b>Indicador</b> ganha nota de 0 a 100 e cor. <b>Informação</b> é um fato consolidado que não vira nota — some de aparelhos, lista de causas — e aparece em cinza-azulado, sem juízo de valor.</p>
+   <div class="split"><form id="fi" class="form">
+    <label class="f">Nome *<input class="field" name="nome" value="${esc(e.nome)}" maxlength="60" required></label>
+    <label class="f">Chave *<input class="field" name="chave" value="${esc(e.chave)}" maxlength="40" ${e.id?'disabled':''} required></label>
+    <label class="f full">Descrição — "o que é este número"<input class="field" name="descricao" value="${esc(e.descricao||'')}" maxlength="200"></label>
+    <label class="f full">Observação — aparece quando o cartão é ampliado (por que entra ou não entra na conta)<textarea class="field" name="observacao" maxlength="500">${esc(e.observacao||'')}</textarea></label>
+    <label class="f">Espécie<select class="field" name="especie">${Object.entries(ESPECIE).map(([k,l])=>`<option value="${k}" ${e.especie===k?'selected':''}>${l}</option>`).join('')}</select></label>
+    <label class="f">Unidade<input class="field" name="unidade" value="${esc(e.unidade||'')}" maxlength="10" placeholder="%  ·  V  ·  ms"></label>
+    <label class="f">Casas decimais<input class="field" name="decimais" type="number" min="0" max="4" value="${esc(e.decimais)}"></label>
+
+    <div class="f full so-ind">Como a leitura vira nota
+      <select class="field" name="sentido">${Object.entries(SENTIDO).map(([k,l])=>`<option value="${k}" ${e.sentido===k?'selected':''}>${l}</option>`).join('')}</select></div>
+    <label class="f so-ind">Alvo (nota 100)<input class="field" name="nominal" value="${esc(e.nominal)}"></label>
+    <label class="f so-ind so-crit">Crítico (nota 0)<input class="field" name="critico" value="${esc(e.critico)}"></label>
+    <label class="f so-ind so-faixa">Borda de baixo (nota 0)<input class="field" name="critico_baixo" value="${esc(e.critico_baixo)}"></label>
+    <label class="f so-ind so-faixa">Borda de cima (nota 0)<input class="field" name="critico_alto" value="${esc(e.critico_alto)}"></label>
+
+    <label class="f so-ind">Verde a partir de<input class="field" name="faixa_verde" value="${esc(e.faixa_verde)}"></label>
+    <label class="f so-ind">Amarelo a partir de<input class="field" name="faixa_amarelo" value="${esc(e.faixa_amarelo)}"></label>
+    <label class="f so-ind">Laranja a partir de<input class="field" name="faixa_laranja" value="${esc(e.faixa_laranja)}"></label>
+
+    <div class="f full so-ind"><label class="chk"><input type="checkbox" name="no_idg" ${e.no_idg?'checked':''}> Entra na conta do índice</label></div>
+    <label class="f so-ind">Peso<input class="field" name="peso" value="${esc(e.peso)}"></label>
+
+    <label class="f full">Fonte (conector) *<select class="field" name="funcao">${CONEC.map(c=>`<option value="${esc(c.chave)}" ${e.funcao===c.chave?'selected':''}>${esc(c.nome)}</option>`).join('')||'<option value="">— nenhum conector cadastrado —</option>'}</select></label>
+    <label class="f full">Métrica na fonte<input class="field" name="metrica" list="lmetricas" value="${esc(metricaAtual)}" placeholder="${esc(e.chave||'usa a chave do indicador')}">
+      <datalist id="lmetricas">${(con.metricas||[]).map(m=>`<option value="${esc(m)}">`).join('')}</datalist></label>
+    <label class="f">Coletar a cada (minutos)<input class="field" name="intervalo_min" type="number" min="1" value="${Math.round((e.intervalo_seg||3600)/60)}"></label>
+    <label class="f">Validade da leitura (horas)<input class="field" name="validade_h" type="number" min="1" value="${Math.round((e.validade_seg||86400)/3600)}"></label>
+    <label class="f">Ordem<input class="field" name="ordem" type="number" value="${esc(e.ordem)}"></label>
+    <label class="f"><span>Ativo</span><select class="field" name="ativo"><option value="1" ${e.ativo?'selected':''}>Sim</option><option value="0" ${e.ativo?'':'selected'}>Não</option></select></label>
+    <div class="f full">Ícone<div class="icones">${Object.entries(IOT_ICONES).map(([k,v])=>`<button type="button" class="ip ${e.icone===k?'on':''}" data-ii="${k}" title="${esc(v.nome)}">${iotIcone(k)}</button>`).join('')}</div></div>
+    <div class="full" style="display:flex;gap:8px;justify-content:flex-end"><button type="button" class="btn" id="ci">Cancelar</button><button class="btn pri" type="submit">Salvar indicador</button></div>
+    <div id="ei" class="full"></div></form>
+    <div><div class="f" style="margin-bottom:8px">Prévia do cartão</div><div id="pi"></div>
+     <div class="f so-ind" style="margin-top:16px">Testar a calibração<input class="field" name="simvalor" id="simvalor" placeholder="digite uma leitura, ex.: 98,5"></div>
+     <div id="sim" class="hint" style="margin-top:8px"></div>
+     <p class="hint" style="margin-top:14px">A prévia da nota é calculada pelo banco, pela mesma função que o coletor usa — o que aparecer aqui é o que vai acontecer de verdade.</p>
+     <p class="hint">Conector: ${esc(con.descricao||'—')}</p></div></div></div>`;
+
+  const f=box.querySelector('#fi'), sim=box.querySelector('#sim'), pi=box.querySelector('#pi');
+  if(!e.id){ f.nome.oninput=()=>{ if(!f.chave.dataset.tocado) f.chave.value=slug(f.nome.value); desenhar(); };
+             f.chave.oninput=()=>{ f.chave.dataset.tocado='1'; }; }
+  box.querySelectorAll('[data-ii]').forEach(b=>b.onclick=()=>{e.icone=b.dataset.ii;box.querySelectorAll('.ip').forEach(x=>x.classList.toggle('on',x===b));desenhar();});
+  box.querySelector('#ci').onclick=()=>{EDITI=null;render();};
+
+  function desenhar(){
+    const ind=f.especie.value==='indicador';
+    box.querySelectorAll('.so-ind').forEach(x=>x.style.display=ind?'':'none');
+    box.querySelectorAll('.so-crit').forEach(x=>x.style.display=ind&&f.sentido.value!=='faixa_ideal'?'':'none');
+    box.querySelectorAll('.so-faixa').forEach(x=>x.style.display=ind&&f.sentido.value==='faixa_ideal'?'':'none');
+    const cor=ind?CORF.verde:CORF.neutro;
+    pi.innerHTML=`<div class="prev"><div class="ico">${iotIcone(e.icone)}</div><div><b>${esc(f.nome.value||'Nome do indicador')}</b><span>${esc(f.descricao.value||'')}</span></div>
+      <span style="margin-left:auto;color:${cor};font-weight:800">${ind?'nota':'info'}</span></div>`;
+    simular();
+  }
+  let th=null;
+  function simular(){
+    clearTimeout(th);
+    const v=nn(box.querySelector('#simvalor').value);
+    if(f.especie.value!=='indicador'){ sim.innerHTML=''; return; }
+    if(v==null||!isFinite(v)){ sim.innerHTML='<span class="mut">Digite uma leitura para ver a nota que ela geraria.</span>'; return; }
+    th=setTimeout(async()=>{
+      const {data,error}=await SB.rpc('idg_simular',{p_valor:v,p_sentido:f.sentido.value,p_nominal:nn(f.nominal.value),p_critico:nn(f.critico.value),
+        p_critico_baixo:nn(f.critico_baixo.value),p_critico_alto:nn(f.critico_alto.value),
+        p_verde:nn(f.faixa_verde.value),p_amarelo:nn(f.faixa_amarelo.value),p_laranja:nn(f.faixa_laranja.value)});
+      if(error){ sim.innerHTML='<span class="msg err">'+esc(error.message)+'</span>'; return; }
+      const r=(data&&data[0])||{};
+      if(r.indice==null){ sim.innerHTML='<span class="mut">Sem nota: falta preencher o alvo ou o crítico.</span>'; return; }
+      const cor=CORF[r.estado]||CORF.cinza;
+      sim.innerHTML=`Leitura <b>${nfmt(v,parseInt(f.decimais.value,10)||0)}${esc(f.unidade.value)}</b> &rarr; nota <b style="color:${cor}">${nfmt(r.indice,1)}</b> · <b style="color:${cor}">${esc(FAIXA[r.estado]||r.estado)}</b>`;
+    },260);
+  }
+  f.oninput=desenhar; f.onchange=desenhar; desenhar();
+
+  f.onsubmit=async ev=>{ ev.preventDefault(); const er=box.querySelector('#ei');
+    const falha=m=>{er.innerHTML='<div class="msg err">'+esc(m)+'</div>';};
+    const ind=f.especie.value==='indicador';
+    const metrica=f.metrica.value.trim();
+    const row={sistema_id:e.sistema_id,nome:f.nome.value.trim(),descricao:f.descricao.value.trim()||null,
+      observacao:f.observacao.value.trim()||null,icone:e.icone,especie:f.especie.value,
+      unidade:f.unidade.value.trim()||null,decimais:parseInt(f.decimais.value,10)||0,
+      sentido:ind?f.sentido.value:null,
+      nominal:ind?nn(f.nominal.value):null,
+      critico:ind&&f.sentido.value!=='faixa_ideal'?nn(f.critico.value):null,
+      critico_baixo:ind&&f.sentido.value==='faixa_ideal'?nn(f.critico_baixo.value):null,
+      critico_alto:ind&&f.sentido.value==='faixa_ideal'?nn(f.critico_alto.value):null,
+      faixa_verde:nn(f.faixa_verde.value),faixa_amarelo:nn(f.faixa_amarelo.value),faixa_laranja:nn(f.faixa_laranja.value),
+      /* informação nunca pesa: o banco tem um CHECK para isso, mas avisar aqui é
+         melhor do que deixar o Postgres responder em inglês */
+      no_idg:ind&&f.no_idg.checked, peso:ind&&f.no_idg.checked?(nn(f.peso.value)||0):0,
+      funcao:f.funcao.value, parametros:metrica?{metrica}:{},
+      intervalo_seg:Math.max(60,(parseInt(f.intervalo_min.value,10)||60)*60),
+      validade_seg:Math.max(60,(parseInt(f.validade_h.value,10)||1)*3600),
+      ordem:parseInt(f.ordem.value,10)||0, ativo:f.ativo.value==='1', atualizado_em:new Date().toISOString()};
+    if(!e.id) row.chave=slug(f.chave.value);
+    if(!row.nome) return falha('Informe o nome.');
+    if(!e.id&&!row.chave) return falha('Informe a chave.');
+    if(!row.funcao) return falha('Escolha a fonte. Sem conector a coleta não sabe onde buscar.');
+    if(!(row.faixa_verde>row.faixa_amarelo&&row.faixa_amarelo>row.faixa_laranja&&row.faixa_laranja>=0))
+      return falha('As faixas têm de estar em ordem decrescente: verde > amarelo > laranja ≥ 0.');
+    if(ind&&row.nominal==null) return falha('Indicador precisa de um alvo (a leitura que vale nota 100).');
+    if(ind&&row.sentido==='faixa_ideal'&&(row.critico_baixo==null||row.critico_alto==null))
+      return falha('Na faixa ideal, informe as duas bordas.');
+    if(ind&&row.sentido!=='faixa_ideal'&&row.critico==null) return falha('Informe o crítico (a leitura que vale nota 0).');
+    if(ind&&row.no_idg&&!(row.peso>0)) return falha('Para entrar na conta, o peso tem de ser maior que zero.');
+    const r=e.id?await SB.from('idg_indicador').update(row).eq('id',e.id):await SB.from('idg_indicador').insert(row);
+    if(r.error) return falha(/duplicate|unique/i.test(r.error.message)?'Já existe um indicador com esta chave neste sistema.':r.error.message);
+    EDITI=null;await carregar();render();toast('Indicador salvo — vale na próxima coleta'); };
   box.scrollIntoView({behavior:'smooth',block:'start'});
 }
 
