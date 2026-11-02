@@ -322,7 +322,11 @@ function telaSenha(){
   $('fSenha').onsubmit=async e=>{ e.preventDefault(); const er=$('sErro'); er.classList.remove('on');
     if($('s1').value!==$('s2').value){ er.textContent='As senhas não conferem.'; er.classList.add('on'); return; }
     const {error}=await SB.auth.updateUser({password:$('s1').value});
-    if(error){ er.textContent=error.message; er.classList.add('on'); return; }
+    /* o Auth recusa senha vazada ou fraca em inglês; aqui quem lê é o cliente */
+    if(error){ er.textContent=(error.code==='weak_password'||/known to be weak|easy to guess|pwned|leaked/i.test(error.message||''))
+        ?'Esta senha foi recusada: ela aparece em vazamentos públicos conhecidos, ou é fraca demais. Escolha outra — uma frase longa funciona melhor do que uma palavra com números no fim.'
+        :error.message;
+      er.classList.add('on'); return; }
     $('modalBody').innerHTML='<div class="ok">Senha alterada.</div>'; setTimeout(fecharDialogo,1400); };
 }
 async function lerSessao(){
